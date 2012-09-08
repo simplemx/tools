@@ -10,9 +10,10 @@ body, button, input, select, textarea /* for ie */ {
 }
 
 h1, h2, h3, h4, h5, h6 { font-size: 100%; }
-
+/*#F7F7F7;*/
 body {
 	font-size : 13px;
+	background-color : black;
 }
 
 ul{
@@ -28,20 +29,23 @@ h3 {
 #wrapper{
 	margin : 0 auto;
 	width : 75%;
+	background-color : #F2F2F2;
 	min-width : 800px;
+	border-left : 1px solid  #DDD;
+	border-right : 1px solid  #DDD;
+	border-bottom : 1px solid  #DDD;
 }
 
 #header {
-	background-color : yellow;
 	padding : 0 20px;
+	margin : 0 10px;
 	height : 200px;
 	text-align : center;
-	border : 1px solid black;
+	border-bottom :1px solid #CCC; 
 }
 
 #content {
 	overflow : hidden;
-	position : relative;
 	width : 100%
 }
 
@@ -68,7 +72,6 @@ h3 {
 .side_bar {
 	width : 25%;
 	min-width : 200px;
-	background-color : pink;
 	float : left;
 	text-align : right;
 }
@@ -82,7 +85,6 @@ h3 {
 .main_content {
 	width : 75%;
 	min-width : 600px;
-	background-color : blue;
 	float : left;
 }
 
