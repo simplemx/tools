@@ -1,6 +1,8 @@
 #! /usr/bin/env python
 #coding=utf-8
 
+import sys
+
 path_name="QueryTest"
 target_path = "D:\\"
 package = "package com.ailk.ics.view.QUST.fee.monthbill;"
@@ -89,6 +91,39 @@ def writeFile(content, class_name):
 	file.write(content)
 	file.close()
 
+html_content = """
+<span jwcid="@DocType"/>
+<html>
+	<head jwcid="@icsframework:Head">
+		<span jwcid="@HeadDoc"/>
+	</head>
+	<body jwcid="@Body">
+		<span jwcid="@CommonBusiTop"/>
+		<span jwcid="@Conditional" condition="ognl:isPageValidate">
+			<!-- 业务逻辑开始 -->
+			<!-- 业务逻辑结束 -->
+		</span> 
+		<span jwcid="@CommonBusiBottom" needRelativeBusi="true"/>
+	</body>
+</html>
+"""
+config_content = """
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE page-specification PUBLIC
+  "-//Apache Software Foundation//Tapestry Specification 3.0//EN"
+  "http://jakarta.apache.org/tapestry/dtd/Tapestry_3_0.dtd">
+
+<page-specification class="com.ailk.ics.view.QUST.fee.monthbill.%s">
+</page-specification>
+"""
+def writeHtml():
+	file = open(target_path + path_name + ".html", "w")
+	file.write(html_content)
+	file.close()
+	file = open(target_path + path_name + ".page", "w")
+	file.write(config_content % (package[0:-1] + "." + path_name + "Page"))
+	file.close()
+
 def generate():
 	page_name = path_name + "Page"
 	action_name = path_name + "Action"
@@ -102,7 +137,11 @@ def generate():
 	writeFile(page_gen_content, page_name)
 	writeFile(action_gen_content, action_name)
 	writeFile(handler_gen_content, handler_name)
+	writeHtml()
 
 if __name__ == "__main__" :
+	if len(sys.argv) > 1:
+		path_name = sys.argv[1]
+	print path_name
 	generate()
 
