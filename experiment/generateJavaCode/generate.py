@@ -142,6 +142,7 @@ def generate():
 if __name__ == "__main__" :
 	if len(sys.argv) > 1:
 		path_name = sys.argv[1]
-	print path_name
+	if len(sys.argv) > 2:
+		package = "package com.ailk.ics.view.QUST." + sys.argv[2] + ";"
 	generate()
 
