@@ -43,54 +43,26 @@
 					</ul>
 				</div>
 				<div class="main_content">
-					<div class="post">
-						<div class="post_title">
-							<h3>
-								title1
-							</h3>
-							<div class="post_detail">
-								post at
-								<span class="date">
-									2012-1-1
-								</span>	
-								tags
-								<span class="tag">
-									java
-								</span>
-							</div>
-						</div>
-						<div class="post_content">
-							<p>
-							fkldajfldaj laj fldaj fdlajf adjfkldajf
-							</p>
-							<p>
-							fdjlakfj dlajf ldajf ldajf
-							fldajklfdjljfdlj
-							</p>
-						</div>	
-					</div>
-					<div class="post">
-						<div class="post_title">
-							<h3>
-								title1
-							</h3>
-							<div class="post_detail">
-								post at
-								<span class="date">
-									2012-1-1
-								</span>	
-
-							</div>
-						</div>
-						<div class="post_content">
-							fkldajfldaj laj fldaj fdlajf adlj
-						</div>	
-					</div>
+					
 				</div>
 			</div>
 			<div id="footer">
-				this is footer
+				by simplemx
 			</div>
 		</div>
+		<script type="text/template" id="blog_list_template">
+			<ul class="blog_list">
+				{{#blog_list}}
+					<li>
+						<a href="#" onclick="javascript:return gotoBlog('{{url}}');">
+							{{title}}<span class="date"> post at {{date}}</span>
+						</a>
+					</li>
+				{{/blog_list}}
+			</ul>
+		</script>
+		<script type="text/javascript" src="jquery-1.7.2.min.js"></script>
+		<script type="text/javascript" src="mustache.js"></script>
+		<script type="text/javascript" src="index.js"></script>
 	</body>
 </html>

@@ -26,6 +26,9 @@ h2 {
 h3 {
 	font-size : 20px;
 }
+a{
+	text-decoration : none;
+}
 #wrapper{
 	margin : 0 auto;
 	width : 75%;
@@ -46,7 +49,8 @@ h3 {
 
 #content {
 	overflow : hidden;
-	width : 100%
+	width : 100%;
+	min-height : 600px;
 }
 
 #footer {
@@ -60,7 +64,6 @@ h3 {
 	line-height : 24px;
 	height : 24px;
 	font-weight : bold;	
-	font-weight : bold;
 	overflow: hidden;
 }
 
@@ -98,4 +101,23 @@ h3 {
 
 .post {
 	margin : 10px;
+}
+
+.blog_list {
+	margin : 10px;
+}
+
+.blog_list li{
+	margin-top : 5px;
+	line-height : 24px;
+}
+
+.blog_list a {
+	font-weight : bold;
+	font-size : 16px;	
+}
+
+.blog_list .date{
+	font-size : 12px;	
+	font-weight : normal;
 }
