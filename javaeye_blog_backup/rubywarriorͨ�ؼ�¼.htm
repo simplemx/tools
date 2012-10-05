@@ -1,0 +1,347 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>rubywarrior通关记录</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p>    国庆期间将programming ruby的基础部分翻了个大概，感觉ruby比起java难多了，学java的时候完全没有一点难的感觉，可能和java是类c有关吧，而动态语言的很多特性都没怎么接触过。</p>
+<p>    很早以前就记得有人推荐过rubywarrior的<a href="http://qichunren.iteye.com/blog/383938">http://qichunren.iteye.com/blog/383938</a></p>
+<p> </p>
+<p>    脑子里面都是java得code style，所以在写ruby的时候也能找到java的痕迹，悲剧- -</p>
+<pre class="ruby" name="code">class Player
+  #enemy
+  @@Sludge="Sludge"
+  @@Thick_Sludge="Thick Sludge"
+  
+  @@Empty_Space="nothing"
+  
+  #direction
+  @@LEFT=:left
+  @@RIGHT=:right
+  @@FORWARD=:forward
+  @@BACKWARD=:backward
+  
+  #ACTION
+  @@WALK="WALK"
+  @@ATTACK="ATTACK"
+  @@REST="REST"
+  @@BIND="BIND"
+  @@RESCUE="RESCUE"
+  
+  #CLASS VAR
+  @@DIRECTIONARRAY=[@@LEFT,@@RIGHT,@@FORWARD,@@BACKWARD]
+  @@ENEMYARRAY=[@@Thick_Sludge,@@Sludge]
+  @@BINDMAP={@@LEFT=&gt;false,@@RIGHT=&gt;false,@@FORWARD=&gt;false,@@BACKWARD=&gt;false}
+  
+  #status
+  @lastHealth=0
+  @action=nil
+  @direction=nil
+  @retreatDirection=nil
+  
+  #var
+  @warrior=nil
+  @units=nil#all the units in this stairs
+  @tickingUnit=nil#the unit that has bomb on it
+  
+  def initialize
+    @lastHealth=20
+    @action=@@WALK
+    @direction=@@FORWARD
+  end
+  
+  def refreshBindMap()
+    @@BINDMAP[@@LEFT]=@@BINDMAP[@@RIGHT]=@@BINDMAP[@@FORWARD]=@@BINDMAP[@@BACKWARD]=false
+  end
+  
+  def play_turn(warrior)
+    # add your code here
+    setWarrior(warrior)
+    thinking
+    action
+  end
+  
+  def setWarrior(warrior)
+    @warrior=warrior
+  end
+  
+  
+  def thinking()
+    if isInDanger? then avoidDanger
+    else thinkingHowToDo
+    end
+  end
+  
+  
+  def avoidDanger()
+    direction=getEmptySpace
+    if direction!=nil
+      retreat(direction)
+    else
+      #we can retreat ,so bind the enemy
+      bindAEnemy
+    end
+  end
+  
+  def retreat(direction)
+    @action=@@WALK
+    @direction=direction
+    @retreatDirection=getOppositeDirection
+  end
+  
+  def bindAEnemy()
+    @action=@@BIND
+    @direction=getAEnemyDirection
+    @@BINDMAP[@direction]=true
+  end
+  
+  def getAEnemyDirection()
+    @@DIRECTIONARRAY.each do|direction|
+      if isEnemy?(@warrior.feel(direction).to_s) and !@@BINDMAP[direction] then return direction
+      end
+    end
+  end
+  
+  
+  def getOppositeDirection()
+    case @direction
+      when @@LEFT then @@RIGHT
+      when @@RIGHT then @@LEFT
+      when @@FORWARD then @@BACKWARD
+      when @@BACKWARD then @@FORWARD
+      end
+  end
+  
+  
+  def getEmptySpace()
+    @@DIRECTIONARRAY.each do |direction|
+      if @warrior.feel(direction).to_s==@@Empty_Space then return direction
+      end
+    end
+    return nil
+  end
+  
+  
+  def isInDanger?()
+    dangerNum=0
+    @@DIRECTIONARRAY.each do |direction|
+      if isEnemy?(@warrior.feel(direction).to_s) and !@@BINDMAP[direction] then dangerNum+=1
+      end
+    end
+    dangerNum&gt;1?
+    true:
+    false;
+  end
+  
+  #IF SURROUNDING HAS ticking ,clear it firstly
+  def thinkingHowToDo()
+    if clearTicking? then @action=getClearTickingAction
+    elsif shouldRest? then@action=@@REST
+    elsif shouldAttack? then @action=@@ATTACK
+    elsif shouldRescue? then @action=@@RESCUE
+    else walkCommand
+    end
+    @lastHealth=@warrior.health
+  end
+  
+  def clearTicking?()
+    if @tickingUnit==nil then
+      @warrior.listen.each do |unit|
+        if unit.ticking? then 
+          @tickingUnit=unit
+          break;
+        end
+      end
+    end
+    return @tickingUnit!=nil
+  end
+  
+  @lastDirection=nil
+  
+  def getClearTickingAction()
+    direction=@warrior.direction_of(@tickingUnit)
+    puts direction
+    if @warrior.feel(direction).ticking? then 
+      clearBomb(direction)
+    elsif @retreatDirection!=nil then
+      puts "retreat"
+      moveAnotherDirection(direction)
+    elsif !@warrior.feel(direction).empty? then #if it's not null means that you should go another direction to clear the bomn
+      puts "another"
+      goAnotherDirection(direction)
+    else
+      puts "walk"
+      @lastDirection=@direction=direction
+      return @@WALK
+    end
+  end
+  
+  
+  def moveAnotherDirection(direction)
+     if direction==@reteatDirection then
+      @direction=findAnotherDirection
+      @reteatDirection=nil
+    end
+    @@WALK
+  end
+  
+  def clearBomb(direction)
+    @direction=direction
+    @tickingUnit=nil
+    @@RESCUE
+  end
+  
+  def goAnotherDirection(direction)
+    @direction=findEmptySpace(direction)
+    @@WALK
+  end
+  
+  def findEmptySpace(direction1,direction2)
+    @@DIRECTIONARRAY.each do |dire|
+      if dire!=direction1 and dire!=direction2 then return dire
+        end
+    end
+    
+  end
+  
+  
+  def findEmptySpace(direction)
+    reteatDirection=getOppositeDirection;
+    @@DIRECTIONARRAY.each do |dire|
+      if dire!=direction and dire!=reteatDirection and @warrior.feel(dire).empty? then
+        return dire
+      end
+    end
+    @retreatDirection=@direction
+    return reteatDirection
+    end
+  
+
+  
+  def shouldRescue?()
+    @@DIRECTIONARRAY.each do |direction|
+      if @warrior.feel(direction).captive? 
+        @direction=direction
+        return true
+      end
+    end
+    false
+  end
+  
+  
+  def shouldRest?()
+    if @warrior.health&lt;14 and @lastHealth&lt;=@warrior.health then return true
+    end
+    false
+  end
+  
+  def shouldAttack?()
+    puts "attack"
+    @@DIRECTIONARRAY.each do |direction|
+      if isEnemy?(@warrior.feel(direction).to_s)  and !@@BINDMAP[direction]
+        @direction=direction
+        return true
+      end
+    end
+    false
+  end
+  
+  def isEnemy?(space)
+    @@ENEMYARRAY.each do|enemy|
+      if enemy==space then return true
+        end
+      end
+      false
+  end
+  
+  
+  def walkCommand()
+    if @retreatDirection!=nil 
+      @direction=findAnotherDirection
+      @retreatDirection=nil
+    else
+      @direction=analyzeDirection
+    end
+    @action=@@WALK
+  end
+  
+  #listen to the surrounding and analyze how to do 
+  def analyzeDirection()
+    if @warrior.listen!=nil and @warrior.listen!=[] 
+      return goToClearLevelDirection
+    else
+      return @warrior.direction_of_stairs
+    end
+  end
+  
+  #if the stairs is in the direction of the cleardirection choose another direction 
+  def goToClearLevelDirection()
+    #direction=findFirstDirection
+    direction=@warrior.direction_of(@warrior.listen[0])
+    if direction!=@warrior.direction_of_stairs then return direction
+    else
+      return findDirectionExcept(direction)
+    end
+  end
+  
+  #first direction is 
+  def findFirstDirection()
+    @warrior.listen.each do|unit|
+      if unit.ticking? then return findQuickWayToGo(unit)
+        #@warrior.direction_of(unit)
+      end
+    end
+    @warrior.direction_of(@warrior.listen[0])
+  end
+  
+  #
+  def findQuickWayToGo(unit)
+  end
+  
+  def findDirectionExcept(wrongDirection)
+    @@DIRECTIONARRAY.each do |direction|
+      if direction!=wrongDirection and @warrior.feel(direction).empty? then return direction
+        end
+    end
+    wrongDirection
+  end
+  
+  def findAnotherDirection()
+    direction=@retreatDirection
+    @@DIRECTIONARRAY.each do|dire|
+      if isEmpty?(@warrior.feel(dire).to_s) and dire!=direction then return dire
+      end
+    end
+  end
+  
+  def isEmpty?(space)
+    if space==@@Empty_Space then return true
+    else false
+    end
+  end
+  
+  
+  def action()
+    case @action
+      when @@WALK then
+       refreshBindMap
+       @warrior.walk!(@direction)
+      when @@REST then @warrior.rest!
+      when @@ATTACK then @warrior.attack!(@direction)
+      when @@RESCUE then @warrior.rescue!(@direction)
+      when @@BIND then @warrior.bind!(@direction)
+    end
+  end
+  
+end
+</pre>
+<p>   哪天有空回来重写一下代码。现在丑陋的要死了</p>
+<p> </p>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

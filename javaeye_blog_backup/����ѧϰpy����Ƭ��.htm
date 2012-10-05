@@ -1,0 +1,94 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>近期学习py代码片段</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p>早上刚好看到几个挺不错的帖子</p>
+<p>关于mixin的</p>
+<p><a href="http://blog.csdn.net/lanphaday/archive/2007/06/18/1656969.aspx">http://blog.csdn.net/lanphaday/archive/2007/06/18/1656969.aspx</a></p>
+<p><a href="http://wiki.woodpecker.org.cn/moin/IntroMixin">http://wiki.woodpecker.org.cn/moin/IntroMixin</a></p>
+<p>关于一些文章</p>
+<p><a href="http://www.douban.com/group/topic/13716762/">http://www.douban.com/group/topic/13716762/</a></p>
+<p>关于decorator</p>
+<p><a href="http://taoyh163.blog.163.com/blog/static/19580356200711463029809/">http://taoyh163.blog.163.com/blog/static/19580356200711463029809/</a></p>
+<p> </p>
+<p>刚好这几天在写些玩具代码玩玩，被一个实现卡了好久，顺带翻了不少看了但已经淡忘的知识点。呵呵</p>
+<p>1.__metaclass__.可以在类定义后做些约束扩展。</p>
+<pre class="python" name="code">class MetaC(type):
+      def __init__(cls, name, bases, attrd):
+          super(MetaC, cls).__init__(name, bases, attrd)
+          print '*** Created class %r at: %s' % (
+                 name, ctime())
+
+
+class Foo(object):
+      __metaclass__ = MetaC
+      def __init__(self):
+          print '*** Instantiated class %r at: %s' % (
+                 self.__class__.__name__, ctime())
+
+</pre>
+<p> </p>
+<p>2.decorator</p>
+<pre class="python" name="code">def arg_sayer(what):    
+    def what_sayer(meth):        
+        def new(self, *args, **kws):            
+            print what            
+            return meth(self, *args, **kws)        
+        return new    
+    return what_sayer
+
+def FooMaker(word):    
+    class Foo(object):        
+        @arg_sayer(word)        
+        def say(self): 
+            pass    
+    return Foo()
+
+foo1 = FooMaker('this')
+foo2 = FooMaker('that')
+print type(foo1),; foo1.say()  # prints: &lt;class '__main__.Foo'&gt; this
+print type(foo2),; foo2.say()  # prints: &lt;class '__main__.Foo'&gt; that</pre>
+<p> </p>
+<p>3.单例</p>
+<pre class="python" name="code">&gt;&gt;&gt; class Singleton(object):
+        _instance = None
+        def __new__(cls, *args, **kwargs):
+            if not cls._instance:
+                cls._instance = super(Singleton, cls).__new__(
+                                   cls, *args, **kwargs)
+            return cls._instance
+
+
+&gt;&gt;&gt; class C(Singleton):
+        pass
+
+
+&gt;&gt;&gt; class D(Singleton):
+        pass
+
+
+&gt;&gt;&gt; c = C()
+&gt;&gt;&gt; d = C()
+&gt;&gt;&gt; id(c), id(d)
+(10049912, 10049912)
+&gt;&gt;&gt; e = D()
+&gt;&gt;&gt; f = D()
+&gt;&gt;&gt; id(e)
+10113672
+&gt;&gt;&gt; id(f)
+10113672
+&gt;&gt;&gt; g = C()
+&gt;&gt;&gt; id(g)
+10049912
+</pre>
+<p> </p>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

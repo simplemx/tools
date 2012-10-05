@@ -1,0 +1,69 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>基于tapestry3的一些小玩意</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p>1.</p>
+<p> </p>
+<p>看看tapestry5的一些模板就会发现tapestry3的是多么的恶心，而这么恶心的模板语言却偏偏每天都要写。实在是郁闷。</p>
+<p> </p>
+<p>于是想，能否做个转换的过程呢，在tapestry加载模板的时候做个转换呢，将我的模板简化为类似jsp的方式。</p>
+<p> </p>
+<p>当然是可以了。</p>
+<p> </p>
+<p>tapestry加载的模板代码是在DefaultTemplateSource的parseTemplate方法里，在parseTemplate方法内调整为我们自己想做的事情即可。</p>
+<p> </p>
+<p>例如：</p>
+<p>
+</p>
+<pre class="java" name="code"> char[] templateData = TagConverter.enhenceTag(readTemplate(location, encoding));</pre>
+
+<p> 上述我们可以做一个转换的类，将我们定义的模板转换为对应的tapestry的识别的标签即可。</p>
+<p> </p>
+<p>而且这里因为实际翻译的还是tapestry的标签，所以不会有什么大问题，而且转换过程也只是发生在加载模板的时候，模板是会有缓存的，所以消耗不大。</p>
+<p> </p>
+<p>至于翻译标签吧，这个很简单了。</p>
+<p> </p>
+<p> </p>
+<p>2.</p>
+<p>总是在想能否动态的改变组件或者page的模板。最后想到了一个hack。</p>
+<p> </p>
+<p>无论是组件还是page，都是会触发finishload。而finishload方法是会触发加载模板的，而指定模板的是传入的IComponentSpecification对象。</p>
+<p> </p>
+<p>所以想到了监控finishload方法，修改对应的IComponentSpecification对象来实现动态的改变模板的方式。</p>
+<p> </p>
+<p>
+</p>
+<pre class="java" name="code">String template = cycle.getRequestContext().getParameter("config_template");
+		if (StringUtils.isNotEmpty(template)) {
+			INamespace namespace = this.getNamespace();
+			ComponentSpecification spec = (ComponentSpecification)this.getSpecification();
+			ComponentSpecification target = (ComponentSpecification)namespace.getComponentSpecification(template);
+			if(target != null){
+				spec.setAllowBody(target.getAllowBody());
+				spec.setAllowInformalParameters(target.getAllowInformalParameters());
+				spec.setComponentClassName(target.getComponentClassName());
+				spec.setDescription(target.getDescription());
+				spec.setLocation(target.getLocation());
+				spec.setPageSpecification(target.isPageSpecification());
+				spec.setPublicId(target.getPublicId());
+				spec.setSpecificationLocation(target.getSpecificationLocation());
+			} else {
+				Logger.getLogger(getClass()).error("--获取模板错误，根据传入的模板标示："+template+"找不到正确的模板");
+			}
+		}</pre>
+
+<p> 以上就是一个动态改变模板的例子，当然了，这里改变的内容为从请求的参数中读取的。</p>
+<p> </p>
+<p>不过这种方式有很多的限制，比如展示的模板不能显示太多的属性，需要展示的多个模板对应的属性要和对应的java类对应，不然就会出错，因为模板显示的时候会找到java类的getter。</p>
+<p> </p>
+<p>最好的方式就是，展示的模板就是纯的组件模板，不展示属性用的。就算有展示属性也不调用组件，那就没多大问题了。</p>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

@@ -1,0 +1,44 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>jdk源码:String</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p>一直以来，jdk上的一些实现细节，就算不看也是知道的，所以也就没花时间去读。但是，随着经历的增多，却突然想看起来了。为什么呢？因为心里更踏实，总有细节我是不知道的。</p>
+<p> </p>
+<p>不过话说看java代码真是快，1k多行的代码差不多就扫过了。而相同行数的类似开源的js代码，我就算扫过，也总觉得哪里有遗漏。</p>
+<p> </p>
+<p>当然咯，1k行js实现的东西用java实现，代码估计没翻个2倍3倍就很好了。</p>
+<p> </p>
+<p>但是这也反映了一个事实，java真是是个人都能弄，怪不得那么多根本不适合编程的人都能混进来了，比如我，呵呵。</p>
+<p> </p>
+<p>首先来看看StringBuilder和StringBuffer，两者都是一样的，除了sync。他们的共同父类为AbstractStringBuilder。实现CharSequence。其实只要看AbstractStringBuilder这个类就差不多了。</p>
+<p> </p>
+<p>AbstractStringBuilder这个类提供了上述这个两个类的功能，内部维护一个char[]。</p>
+<p> </p>
+<p>这个类大体的方式是这样的，无论任何操作，只要当前的char[]空间不够，不能容纳该次操作的时候，就会进行重新的扩容，调用Arrays.copyOf方法，重新生成足够长度的char[]，将当前的char[]的内容拷贝过去。我一直以为会有对老空间进行重用的操作，结果是没有的。这样造成了用StringBuilder的时候，只要发生扩容，基本就会重新生成一大串的char[]，然后拷贝，然后原有的让jvm回收。当然了，或者会觉得为什么不能再原有的空间上扩展，不能扩展的时候再重新申请空间？这个问题，让我郁闷了好一阵子，这个和操作系统、编程语言的内存管理等都有关系，暂时也说的不大清楚，暂时想到的，相对于java来说，一个系统中jvm中差不多每个时刻就算没人操作我相信都会多多少少有这样那样的对象产生，而且对象是顺着地址分布的，也就是说，这个对象后面会有空闲空间的概率基本是很低的，而且要检查哪些空间是不是已经有对象被占用，必须要将所有当前的对象的起始地址和长度都比对一次，这得多大的开销？所以，重新申请吧，但是像c的realloc就是先判断是否有足够控件的，没有才重新生成空间，拷贝过去，释放原来。</p>
+<p> </p>
+<p>而AbstractStringBuilder类还有另外一个值得注意的，所有的字符串拷贝操作，全部是调用System.arraycopy。的确，利用原生的拷贝方法效率高，这让我想到自己的一些拷贝方法还直接for each。。。。惭愧啊。虽然我早就知道System.arraycopy了。</p>
+<p> </p>
+<p>其他的话，AbstractStringBuilder的其他api就没啥特别的了。</p>
+<p> </p>
+<p>然后回来看StringBuilder，这里有一个以前没注意到的小细节，就是</p>
+<p> </p>
+<pre class="java" name="code">public StringBuilder() {
+	super(16);
+    }</pre>
+<p> 恩，经常就是new一个Stringbuilder，然后不停的append，然后基本就是不停的new char[]，回收老的，或者更切当的是注意传入一定长度，减少这些，虽然看起来微不足道，但也是开销的开销。</p>
+<p> </p>
+<p>就像使用ArrayList,也是注意一下就能减少点空间，减少点开销了，何乐而不为呢。</p>
+<p> </p>
+<p>至于String类，看完之后没多大的触动，都不过是api，没太大的吸引。</p>
+<p> </p>
+<p>ps：jdk的源码很多都没format好，虽然精细简短，但也难看。。。</p>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

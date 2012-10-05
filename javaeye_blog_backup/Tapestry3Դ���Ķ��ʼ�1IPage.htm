@@ -1,0 +1,32 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>Tapestry3源码阅读笔记1:IPage</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p><span>因为页面我们展示的都是Page类，所以从所有页面展示的Page类出发。</span></p>
+<p><span><br></span></p>
+<p><span>Page类的接口是IPage。有一个主要的实现类AbstractPage。所有页面的类都是继承AbstractPage的。一般html的page类的话一般是继承AbstractPage类的一个子类BasePage。</span></p>
+<p><span><br></span></p>
+<p><span>那么我们来看AbstractPage类。</span></p>
+<p><span><br></span></p>
+<p><span>AbstractPage类将_engine、_visit、_requestCycle作为private变量AbstractPage主要使用的变量，它的状态就是这几个变量。</span></p>
+<p><span><br></span></p>
+<p><span>实际上AbstractPage类渲染过程是这样的：根据这三个对象，获取到Page对应的模板，然后进行渲染，渲染的同时如果碰到组件，再递归调用该组件的类，然后依次类推，直到整个Page所有的模板都渲染完毕。所谓的渲染简单点说其实就是往response对象里返回正确的html。</span></p>
+<p><span><br></span></p>
+<p><span>Page会被存储在一个Pool类里，关于这个类后续再说，每次请求，page从pool中被拿出来，然后设置上engine，后面会从engine中获取到visit和requestcycle对象。设置上engine的是attach方法。当page类不使用了，返回到Pool里的是detach方法，此时会将上述engine、visit。requestcycle对象置空，同时调用默认的initialize方法来初始化属性的默认值，这样就可以将Page之前的状态清空了。</span></p>
+<p><span><br></span></p>
+<p> </p>
+<div><span>AbstractPage类主要方法</span></div>
+<div><span>validate()</span></div>
+<div><span>作为验证使用，通过firePageValidate去触发所有PageValidateListener去进行校验。每个page可以实现PageValidateListener接口。page类在finishload方法里默认会检查这个类是否已经实现这个接口，所以如果这个Page类需要做校验的话，只需要实现PageValidateListener接口就可以了。</span></div>
+<div><span><br></span></div>
+<div><span>attach、detach方法 上述已经提到。</span></div>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

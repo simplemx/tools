@@ -1,0 +1,100 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>写了个虾米的缓存音乐文件名称修正工具</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p>      最近突然发现一年前下的专辑遗留在上家公司的电脑里，很都都要重新下了。而豆瓣上很多连接都用不上了，于是就用虾米咯，但是虾米的下载是要虾米币之类的，只有听的时候的缓存mp3，但是缓存文件是乱码的名字的。于是得闲无事写了个工具，将缓存的MP3的名称修正为原来的歌名。当然，什么歌手啊之类的信息就没设置了。</p>
+<p> </p>
+<p>代码如下：</p>
+<p>  </p>
+<pre name="code" class="python">#! /usr/bin/env python
+#coding=gbk
+
+import os
+import shutil
+import urllib
+
+XIAMI_CD_PAGE_URL="http://www.xiami.com/album/193185"
+"ie临时文件夹"
+USER_TEMP_WEB_DIR="C:\\Documents and Settings\\Administrator\\Local Settings\\Temporary Internet Files"
+"音乐文件输出路径"
+MUSIC_OUTPUT_FILE_DIR="E:\\test2"
+
+
+def getMusicNameInfo():
+    #open(SOURCE_TEXT,"r").read()#
+    content = urllib.urlopen(XIAMI_CD_PAGE_URL,"utf-8").read()
+    info = {}
+    num = ""
+    name = ""
+    tempIndex = 0
+    trackIndex = content.find("trackid",0)
+    while trackIndex &gt; 0 :
+        num = content[trackIndex + 9:content.find("&lt;",trackIndex)]
+        tempIndex = content.find("&lt;a",trackIndex)
+        "跳过&lt;a标签到达内容"
+        tempIndex = content.find("&gt;",tempIndex)
+        name = content[tempIndex + 1:content.find("&lt;/a&gt;",trackIndex)]
+        name = name.decode("utf-8").encode('gbk')
+        info[num] = name
+        trackIndex = content.find("trackid",tempIndex)
+    return info
+
+def makeSureTargetDirExists():
+    try:
+        os.chdir(MUSIC_OUTPUT_FILE_DIR)
+    except WindowsError:
+        os.mkdir(MUSIC_OUTPUT_FILE_DIR)
+        os.chdir(MUSIC_OUTPUT_FILE_DIR)
+    
+
+def transferMusicFile2OutputDir():
+    "在临时文件夹中迁移文件到输出文件夹中并且将原来临时文件夹中的mp3数据进行删除"
+    "进行迁移前应该确保临时文件夹中只有当前专辑的音乐文件"
+    makeSureTargetDirExists()
+    infos = getMusicNameInfo()
+    filenames = findTempMusicFileNames()
+    for each in filenames:
+        #print each
+        shutil.copy(each,MUSIC_OUTPUT_FILE_DIR + "\\" + findCorrectName(each,infos))
+        #print findCorrectName(each,infos)
+        os.remove(each)
+        
+def findTempMusicFileNames():
+    result = []
+    fileIter = os.walk(USER_TEMP_WEB_DIR);
+    for root, dirs, files in fileIter:
+        for each in files:
+            if each.lower().endswith(".mp3") and "%" in each:
+                result.append(root+"\\"+each)
+    return result
+    
+
+def correctNameInOutputDir():
+    "修正输出文件夹下的MP3名称，可以直接在临时文件夹中迁移到此再调用本方法"
+    filenames = os.listdir(MUSIC_OUTPUT_FILE_DIR)
+    infos = getMusicNameInfo()
+    os.chdir(MUSIC_OUTPUT_FILE_DIR)
+    for each in filenames:
+        os.rename(each,findCorrectName(each,infos))
+        #os.remove(each)
+
+def findCorrectName(oldName,infos):
+    num = oldName[oldName.rindex("\\")+1 :oldName.index("%")]
+    return num+" "+ infos[num]+".mp3"
+
+if __name__ == "__main__":
+    transferMusicFile2OutputDir()
+
+        
+        </pre>
+<p> </p>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

@@ -1,0 +1,218 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>coding life2011-11-14~2011-11-25</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p>11月看来是一直出差的了，哎，这个年尾全是在出差中度过了。</p>
+<p> </p>
+<p>11月扫过了一下nodejs以及scala，一直对自己说别太泛滥，但是有时候就是忍不住。这个是不好的，深入才是王道。</p>
+<p> </p>
+<p>扫过几眼scala，感觉语法很多都不喜欢，看上去就感觉java、ruby、py的混合体。不过看起来有些却很简洁比如调用函数不用括号。但是始终觉得语法有点乱。</p>
+<p> </p>
+<p>---------------------------------------------</p>
+<p> </p>
+<p><strong>Taperstry</strong></p>
+<p> </p>
+<p>1.foreach的index问题</p>
+<p>在foreach组件里，index是从0开始的，如果现在需要显示一个从1开始的字符串，通过显示index+1的话是行不通的，例如</p>
+<p>&lt;span jwcid="@Insert" value="ognl:str+(index+1)"/&gt;</p>
+<p>这里index始终都会作为字符串来处理了，最后显示是一个str01,str11这样的字符串序列。</p>
+<p>可以通过这样的形式达到想要的效果：</p>
+<p>&lt;span jwcid="@Insert" value="ognl:ognl:new java.lang.StringBuilder(str).append(index+1).toString()"\&gt;</p>
+<p> </p>
+<p>2.在html中的js标签中解释tapestry变量</p>
+<p>可以在html页面中的stript标签中通过这样的方式将tapestry的page变量赋予给js变量</p>
+<p>var str = '&lt;span jwcid="@Insert" value="ognl:str"/&gt;';</p>
+<p>其实对于这个，我是有点疑惑的，jsp方面能不能这样处理呢？</p>
+<p> </p>
+<p> </p>
+<p><strong>linux</strong></p>
+<p>1.scp命令</p>
+<p>scp命令用于在linux系统之间传输文件</p>
+<p> </p>
+<p>scp local_file remote_username@remote_ip:remote_folder</p>
+<p>http://os.51cto.com/art/201003/187301.htm</p>
+<p> </p>
+<p> </p>
+<p><strong>phonegap</strong></p>
+<p>开发的过程中发现，如果是想通过div的方式在移动设备中显示弹出框之类的模拟客户端的方式，经常会出现弹出来就假死的现象，这个有点纠结，还没找到原因，所以最好还是通过调用客户端的方式比较好。</p>
+<p> </p>
+<p><strong>webpy</strong></p>
+<p> </p>
+<p>1.模板内变量赋值 $ content =  blog["content"].replace("&lt;p&gt;","") 中间要有空格</p>
+<p>2.在模板内的变量，如果包含有HTML 标记，以$ 方式引用变量的话，HTML 标记只会以纯文本的显示出来。要想HTML 标记产生效果，可以用$: 引用变量。</p>
+<p> </p>
+<p> </p>
+<p><strong>css</strong></p>
+<p>这个月有空就扫几眼w3school上的css教程。以下是整理</p>
+<p> </p>
+<p>1.属性选择器</p>
+<p>下面的例子为带有 title 属性的所有元素设置样式：</p>
+<p>[title]{ color:red; }</p>
+<p>下面的例子为 title="W3School" 的所有元素设置样式：</p>
+<p>[title=W3School]{border:5px solid blue;}</p>
+<p>下面的例子为包含指定值的 title 属性的所有元素设置样式。适用于由空格分隔的属性值：</p>
+<p>[title~=hello] { color:red; }</p>
+<p>下面的例子为带有包含指定值的 lang 属性的所有元素设置样式。适用于由连字符分隔的属性值：</p>
+<p>[lang|=en] { color:red; }</p>
+<p>属性选择器在为不带有 class 或 id 的表单设置样式时特别有用：</p>
+<p>input[type="text"]</p>
+<p>{</p>
+<p>  width:150px;</p>
+<p>  display:block;</p>
+<p>  margin-bottom:10px;</p>
+<p>  background-color:yellow;</p>
+<p>  font-family: Verdana, Arial;</p>
+<p>}</p>
+<p>input[type="button"]</p>
+<p>{</p>
+<p>  width:120px;</p>
+<p>  margin-left:35px;</p>
+<p>  display:block;</p>
+<p>  font-family: Verdana, Arial;</p>
+<p>}</p>
+<p> </p>
+<p>2.</p>
+<p>text-indent 首行缩进</p>
+<p> </p>
+<p>padding 内边框</p>
+<p>margin 外边框</p>
+<p>这个看w3school上的那张标示边框的图讲的很清楚</p>
+<p> </p>
+<p> </p>
+<p>3.定位</p>
+<p> </p>
+<p>CSS 相对定位</p>
+<p>position: relative;</p>
+<p>设置为相对定位的元素框会偏移某个距离。元素仍然保持其未定位前的形状，它原本所占的空间仍保留。</p>
+<p>注意，在使用相对定位时，无论是否进行移动，元素仍然占据原来的空间。因此，移动元素会导致它覆盖其它框。</p>
+<p> </p>
+<p>CSS 绝对定位</p>
+<p>position:absolute;</p>
+<p>设置为绝对定位的元素框从文档流完全删除，并相对于其包含块定位，包含块可能是文档中的另一个元素或者是初始包含块。元素原先在正常文档流中所占的空间会关闭，就好像该元素原来不存在一样。元素定位后生成一个块级框，而不论原来它在正常流中生成何种类型的框。</p>
+<div><br></div>
+<div><br></div>
+<div>3.</div>
+<div>
+<div>h1 &gt; strong {color:red;}</div>
+<div>这个规则会把第一个 h1 下面的 strong 元素变为红色，但是第二个 strong 不受影响：</div>
+<div>&lt;h1&gt;This is &lt;strong&gt;very&lt;/strong&gt; important.&lt;/h1&gt;</div>
+<div>&lt;h1&gt;This is &lt;em&gt;really &lt;strong&gt;very&lt;/strong&gt;&lt;/em&gt; important.&lt;/h1&gt;</div>
+<div><br></div>
+<div>例如，如果要增加紧接在 h1 元素后出现的段落的上边距，可以这样写：</div>
+<div>h1 + p {margin-top:50px;}</div>
+<div>这个选择器读作：“选择紧接在 h1 元素后出现的段落，h1 和 p 元素拥有共同的父元素”。</div>
+</div>
+<div><br></div>
+<div><strong>android</strong></div>
+<div>其实android官网的资料真的很不错，总觉得买书真的有点浪费。</div>
+<div>http://developer.android.com/guide/topics/fundamentals/tasks-and-back-stack.html</div>
+<div><br></div>
+<div><strong>js</strong></div>
+<div>1.js中的类似c的printf("%d%d",1,2)的format函数</div>
+<div>
+<div>function format(string) {</div>
+<div>    var args = arguments;</div>
+<div>    var pattern = RegExp("%([1-" + (arguments.length-1) + "])", "g");</div>
+<div>    return string.replace(pattern, function(match, index) {</div>
+<div>        return args[index];</div>
+<div>    });</div>
+<div>}; </div>
+<div>format("a %1 and a %2", "cat", "dog");</div>
+<div>正则中%([1-(n-1)])为匹配%1、%2~%(n-1),调用replace函数的时候传入一个闭包到第二个参数中时候，每次匹配的时候就会调用这个闭包并且将返回的结果替换匹配的字符串，所以整理%1匹配的时候就会调用args[1]去替换。</div>
+</div>
+<div><br></div>
+<div>2.undefined and null</div>
+<div>
+<div>Just remember that undefined and null equal each other (and nothing else) and most other types get coerced to a number to facilitate comparison:</div>
+<div>//unnecessary</div>
+<div>if (typeof myVar === "function");</div>
+<div>//better</div>
+<div>if (typeof myVar == "function");</div>
+<div>
+<div>//unnecessary</div>
+<div>var missing =  (myVar === undefined ||  myVar === null);</div>
+<div>//better</div>
+<div>var missing = (myVar == null);</div>
+</div>
+<div><br></div>
+<div>3.替换innerHTML的方式</div>
+<div>动态增加页面内容的时候可以使用div.innerHTML = content;这样的方式。</div>
+<div>但是使用node.insertAdjacentHTML()这个方法更有效。</div>
+<div>参考http://hacks.mozilla.org/2011/11/insertadjacenthtml-enables-faster-html-snippet-injection/?utm_source=html5weekly&amp;utm_medium=email</div>
+<div>
+<div>element.innerHTML += "markup";, the browser does the following:</div>
+<div>1.It gets the value of innerHTML by serializing the descendants of element.</div>
+<div>2.It appends the right hand side of += to the string.</div>
+<div>3.It removes the children of element.</div>
+<div>4.It parses the new string that contains the serialization of the old descendants followed by some new markup.</div>
+<div>而使用insertAdjacentHTML方法，不会remove然后再重新生成内容。所以效率更好。</div>
+</div>
+<div><br></div>
+<div>4.关于，号的code snippet</div>
+<div>
+<div>1）lives ? (lives--, go()) : (gameOver(), exit());</div>
+<div><br></div>
+<div>2）var colorIndex = 0,</div>
+<div>    colors = ["FF0000", "008000", "FF0086", "A2FF00", "0000FF", "800080"]; </div>
+<div>function selectNextColor(){</div>
+<div>    return colors[colorIndex++] || colors[colorIndex = 0, colorIndex++];</div>
+<div>}</div>
+<div>这个可以循环获取颜色</div>
+</div>
+<div><br></div>
+<div>3）</div>
+<div>
+<div>var a = {};</div>
+<div>//attempt eval in context of object &lt;code&gt;a&lt;/code&gt;</div>
+<div>(function() {</div>
+<div>    eval("this.alert('If you can read this I must be global!')");</div>
+<div>}).call(a);</div>
+<div>//TypeError: this.alert is not a function</div>
+<div>//force eval in global context</div>
+<div>(function() {</div>
+<div>    (0,eval)("this.alert('If you can read this I must be global!')");</div>
+<div>}).call(a);</div>
+<div>//alerts: 'If you can read this I must be global!'</div>
+<div>we can use the comma operator to fashion an indirect call to eval which will force it to execute in the global context2:</div>
+<div>although the ES5 standard confirms that indirect calls to eval should run in the global context, not every browser is compliant (i.e. IE &lt;= 8).</div>
+</div>
+<div><br></div>
+<div>5.strict mode</div>
+<div>"use strict";</div>
+<div>第一行将会使用strict mode</div>
+<div><br></div>
+<div>6.javascript ninja上看到的代码段</div>
+<div>
+<pre class="js" name="code">var ninja = function myNinja(){
+assert( ninja == myNinja,
+"This function is named two things - at once!" );
+};
+ninja();
+assert( typeof myNinja == "undefined","But myNinja isn't defined outside of the function." );
+This brings up the most important point: Anonymous functions can be named but those names are only
+visible within the functions themselves.
+
+arguments.callee is available within every function (named or not) and can serve as a reliable way
+to always access the function itself.</pre>
+</div>
+<div>匿名函数如果赋予名字，那么只有在函数内部才能访问，另外也可以使用 <span style="white-space: pre;">arguments.callee来在函数内部获取函数。</span>
+</div>
+<div><br></div>
+<div><br></div>
+</div>
+<div><br></div>
+<div><strong>名词</strong></div>
+<div>lbs：location based service</div>
+<div><br></div>
+<div><br></div>
+<p> </p>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

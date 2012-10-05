@@ -1,0 +1,124 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>jquery lazyload小记</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p>做的网站上说实话，图片比较多，但是和商城类的还是有不少差距。不过还是想为它加上个延缓加载，毕竟会好点。</p>
+<p> </p>
+<p>做图片延缓加载无非就是开始的时候展示一张默认的图片，然后等这张图片真的需要显示的时候再去加载它然后替代默认的图片。</p>
+<p> </p>
+<p>所以这是一个需要前端和服务器一起来完成任务，服务器需要将展示的图片转换为展示默认图片以及设置上实际图片的src，前端利用事件监听判断，需要展示的时候获取图片实际的src进行展示。</p>
+<p> </p>
+<p>不过奇怪的是网上有不少文章的说法是直接使用插件，dom ready的时候将src修改为默认的图片，然后再加上监听器，需要的时候再进行展示。浏览器在dom ready的时候就很可能会对这些img进行加载了，修改为默认图片不过是让它有这个延缓加载的效果而已，但实际上，请求已经发出去了，后面修改为实际src不过是将缓存里的图片展示出来而已，对减少请求和等待时间没多大的帮助。</p>
+<p> </p>
+<p>这里采用jquery的插件。<a href="https://github.com/tuupola/jquery_lazyload">https://github.com/tuupola/jquery_lazyload</a></p>
+<p> </p>
+<p>使用方式嘛，非常简单，服务器传过来的图片标签换成</p>
+<p> </p>
+<pre name="code" class="html"> &lt;img src="img/grey.gif" data-original="img/bmw_m1_hood.jpg" width="765" height="574" alt="BMW M1 Hood"&gt;</pre>
+<p> </p>
+<p>然后在底部加上js</p>
+<p> </p>
+<pre name="code" class="html"> &lt;script type="text/javascript" charset="utf-8"&gt;
+      $(function() {
+          $("img").lazyload();
+      });
+  &lt;/script&gt;</pre>
+<p> </p>
+<p>但是，在使用的过程中我发现，在开始的时候有的图片展示了，有的图片没有展示，需要我拖动下视窗，然后拖回去，它才会展示。</p>
+<p> </p>
+<p>很奇怪，默认的情况下这个插件是会对当前视窗内的img标签进行展示处理的。为什么会这样呢？</p>
+<p> </p>
+<p>查看源码后发现问题出在这里</p>
+<p> </p>
+<pre name="code" class="js"> elements.each(function() {
+                var $this = $(this);
+                if (settings.skip_invisible &amp;&amp; !$this.is(":visible")) {
+                    return;
+                }
+                if ($.abovethetop(this, settings) ||
+                    $.leftofbegin(this, settings)) {
+                        /* Nothing. */
+                } else if (!$.belowthefold(this, settings) &amp;&amp;
+                    !$.rightoffold(this, settings)) {
+                        $this.trigger("appear");
+                } else {
+                    if (++counter &gt; settings.failure_limit) {
+                        return false;
+                    }
+                }
+            });</pre>
+<p> elements为使用选择器后的array，然后它迭代这个array，如果里面的img是在是窗外，它就停止迭代了。</p>
+<p> </p>
+<p>大多数情况下，我们的html内的img出现顺序和它是否出现在视窗内是没必然联系的，比如我的side bar太高了，下面的图片就没出现在视窗内了，但是跟在side bar后面的主内容里的图片是需要进行展示的。</p>
+<p> </p>
+<p>太郁闷了，这插件怎么没考虑这个问题呢。</p>
+<p> </p>
+<p>的确，在插件内对这些img进行排序不是个好的方式。但是这种情况只要页面一大稍微复杂就会有的哦。</p>
+<p> </p>
+<p>转念一想，或者我可以在使用选择器后进行sort。</p>
+<p> </p>
+<pre name="code" class="js">$("img").sort(function(){}).lazyload()</pre>
+<p> </p>
+<p>但是这里也还是会有问题。因为开始的时候排序会将顶部的图片都排前面，下面的图片都在后面，但是一旦拖动滚动条，顶部的图片就是在视窗外了，而elements的前面都是顶部的img，所以怎么拖动滚动条，下面的图片都不会进行展示的。</p>
+<p> </p>
+<p>那么就必须每次更新的时候对这个elements进行排序了？</p>
+<p> </p>
+<p>这个只能当做最后的方式，毕竟每一个resize，每一个scroll都会触发这个更新方法，里面还进行排序，性能是个很大的问题。</p>
+<p> </p>
+<p>然后转念一想，为嘛每次resize scroll都要更新？如果我图片都已经展示了，我就没必要在更新了呀。</p>
+<p> </p>
+<p>噢，于是做出了下面的调整，在最开始就为elements进行排序，同时将更新方法调整为下述这样：</p>
+<p> </p>
+<pre name="code" class="js">function update() {
+            var counter = 0;
+	    /*
+	     when scroll event or resize event is trigger,if all these img is appear,it's no
+	     long to trigger update anymore.so iterator every img if it has show up that remove
+	     it from the elements array.
+	     if the elements array is empty,unbind the update listener  
+	     */
+            if (elements.length &lt; 1 &amp;&amp; $container) {
+            	//remove bind event due to the elements is null and have no element to appear
+            	$container.unbind(settings.event, eventHandler);
+            	$window.unbind("resize", eventHandler);
+	    }
+            elements = $.grep(elements, function(el, index) {
+                var $this = $(el);
+                if (settings.skip_invisible &amp;&amp; !$this.is(":visible")) {
+                    return false;
+                }
+                if ($.abovethetop(el, settings) ||
+                    $.leftofbegin(el, settings)) {
+                    	return true;
+                } else if (!$.belowthefold(el, settings) &amp;&amp;
+                    !$.rightoffold(el, settings)) {
+                        $this.trigger("appear");
+                } else {
+                    if (++counter &gt; settings.failure_limit) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+
+        }</pre>
+ 
+<p>首先每次触发图片显示，都会将它从elements里面去掉，elements里面所有的图片都是没进行延缓加载的，这样无论我是scroll还是resize，elements里面的剩下的都是没进行过展示的，判断所有的内容，展示或者去掉即可。</p>
+<p> </p>
+<p>并且如果elements里面的图片都处理完了，也就是所有的图片都被进行了展示，那么将触发的listener去掉即可，后面拖动就不会触发上述的update方法了。</p>
+<p> </p>
+<p>通过上述的方式，既能减少排序，也能减少事件监听器的触发，就是考虑的会欠缺点。只针对目前我使用的情况。不知道有没有其他更好的方式呢？</p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

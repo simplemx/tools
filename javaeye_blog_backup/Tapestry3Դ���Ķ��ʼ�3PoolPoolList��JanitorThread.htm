@@ -1,0 +1,202 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>Tapestry3源码阅读笔记3:Pool/PoolList类/JanitorThread</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p><span><span style="">前面说到实际保存page的是Pool类，那么来看Pool类。</span></span></p>
+<p><span><span style=""><br></span></span></p>
+<p><span><span style=""><br></span></span></p>
+<div style="font-size: medium;"><span><span style="">Pool类是保存对象的容器，它负责tapestry里面所有的缓存的保存。</span></span></div>
+<div style="font-size: medium;"><span><span style="">实际引用保存对象的是它的一个私有变量hashmap。如果是保存Page的话，这个hashmap保存的key为保存的page的名称和locale等生成的一个MultiKey对象，value为一个PoolList。每次获取page的时候传入key，从map中找到poollist，然后获取最新的page。</span></span></div>
+<div style="font-size: medium;"><span><span style=""><br></span></span></div>
+<div style="font-size: medium;"><span><span style="">PoolList对象是一个linkedlist结构的对象，它有两个引用，一个是记录当前保存的队列，由first引用，一个是记录已经回收了对象的队列应用，由spare引用。缓存的page对象保存在first队列下。当page对象回收的时候，该entity引用就被废弃掉放到spare引用下。</span></span></div>
+<div style="font-size: medium;"><span><span style=""><br></span></span></div>
+<div style="font-size: medium;">
+<div><span><span style="">怎么标记page的新旧呢，它是由Pool的generation属性来标记。generation属性是从0开始一直递增的一个属性，它是怎么递增的一回再说。</span></span></div>
+<div><span><span style=""><br></span></span></div>
+<div><span><span style="">首先，所有page在保存进PoolList的时候在缓存entity中会记录这个page的generation。当Pool进行cleanup对象的时候，就是调用icleanable接口的方法executeCleanup的时候，它会首先判断当前Pool的缓视池大小是否已经过大了，这个通过简单的generation-window的差值来判断的，generation是递增的，当generation和window的差值过大了，那么就需要清除缓存了。其实window变量就相当于视窗大小一样，你的缓存增加了，那么过老的缓存就应该废弃掉，就好像你从车里看车外一样，车只要向前进，那么后面的风景就不再存在窗口中了，就是应该从缓存中去掉了。此时executeCleanup方法会调用所有poollist的cleanup(generation)方法去清除最老一代的缓存。也就是从PoolList的从最老一代起的缓存以及spare下的引用全部清除掉。</span></span></div>
+<div><span><span style=""><br></span></span></div>
+<div><span><span style="">由上述可以知道，page实例是会有很多个的，如果被频繁调用创建新的实例，那么它的PoolList下会有很多相同或不同generation的实例，而且是从大的generation排序到小的generation，而且spare中也会有空的引用。直到pool调用executeCleanup方法，才会将其中的过老的缓存清除掉。那么executeCleanup是什么时候执行的呢？</span></span></div>
+<div><span><span style=""><br></span></span></div>
+<div><span><span style="">它就是由一个daemon线程JanitorThread来控制的。这个线程默认每隔30秒实行一次，每执行一次，它就调用Pool的executeCleanup方法，executeCleanup方法会为Pool的generation执行加1，也就说每隔30秒Pool就会清除掉缓存，而且generation就会不同了。</span></span></div>
+<div><span><span style=""><br></span></span></div>
+<div><span><span style="">Pool类的的retrive方法，这个方法获取缓存的对象</span></span></div>
+</div>
+<div><span><span style=""><br></span></span></div>
+<div>
+<pre class="java" name="code"><span><span style="">public synchronized Object retrieve(Object key)
+{
+Object result = null;
+
+if (_map == null)
+_map = new HashMap();
+
+PoolList list = (PoolList) _map.get(key);
+
+if (list != null)
+result = list.retrieve();
+
+if (result != null)
+_pooledCount--;
+
+return result;
+}</span></span></pre>
+</div>
+<div><span><span style=""> </span></span></div>
+<div><span><span style="">Pool类的store方法，保存缓存的对象</span></span></div>
+<div>
+<pre class="java" name="code"><span><span style="">public synchronized void store(Object key, Object object)
+{
+getAdaptor(object).resetForPool(object);
+
+if (_map == null)
+_map = new HashMap();
+
+PoolList list = (PoolList) _map.get(key);
+
+if (list == null)
+{
+list = new PoolList(this);
+_map.put(key, list);
+}
+
+int count = list.store(_generation, object);
+
+_pooledCount++;
+
+
+}</span></span></pre>
+</div>
+<div><span><span style=""> </span></span></div>
+<div><span><span style="">Pool类的executeClean方法，负责执行清除过老的缓存：</span></span></div>
+<div><span><span style=""><br></span></span></div>
+<div>
+<pre class="java" name="code"><span><span style="">public synchronized void executeCleanup()
+{
+
+_generation++;
+
+int oldestGeneration = _generation - _window;
+
+if (oldestGeneration &lt; 0)
+return;
+
+int oldCount = _pooledCount;
+int culledKeys = 0;
+
+// During the cleanup, we keep the entire instance synchronized
+// (meaning other threads will block when trying to store
+// or retrieved pooled objects). Fortunately, this
+// should be pretty darn quick!
+
+int newCount = 0;
+
+Iterator i = _map.entrySet().iterator();
+while (i.hasNext())
+{
+Map.Entry e = (Map.Entry) i.next();
+
+PoolList list = (PoolList) e.getValue();
+
+int count = list.cleanup(oldestGeneration);
+
+if (count == 0)
+{
+i.remove();
+culledKeys++;
+}
+else
+newCount += count;
+}
+
+_pooledCount = newCount;
+
+}</span></span></pre>
+</div>
+<div><span><span style=""> </span></span></div>
+<div><span><span style="">PoolList类的cleanup方法：</span></span></div>
+<div><span><span style=""><br></span></span></div>
+<div>
+<pre class="java" name="code"><span><span style="">public int cleanup(int generation)
+{
+_spare = null;
+
+_count = 0;
+
+Entry prev = null;
+
+// Walk through the list. They'll be sorted by generation.
+
+Entry e = _first;
+while (true)
+{
+if (e == null)
+break;
+
+// If found a too-old entry then we want to
+// delete it.
+
+if (e.generation &lt;= generation)
+{
+Object pooled = e.pooled;
+
+// Notify the object that it is being dropped
+// through the cracks!
+
+_pool.getAdaptor(pooled).discardFromPool(pooled);
+
+// Set the next pointer of the previous node to null.
+// If the very first node inspected was too old,
+// set the first pointer to null.
+
+if (prev == null)
+_first = null;
+else
+prev.next = null;
+}
+else
+_count++;
+
+prev = e;
+e = e.next;
+}
+
+return _count;
+}</span></span></pre>
+</div>
+<div><span><span style=""> </span></span></div>
+<div><span><span style="">JanitroThread类的主要方法：</span></span></div>
+<div>
+<pre class="java" name="code"><span><span style="">protected void sweep()
+{
+synchronized (references)
+{
+Iterator i = references.iterator();
+
+while (i.hasNext())
+{
+WeakReference ref = (WeakReference) i.next();
+
+ICleanable cleanable = (ICleanable) ref.get();
+
+if (cleanable == null)
+i.remove();
+else
+cleanable.executeCleanup();
+}
+}
+}</span></span></pre>
+<span style=""><span>
+ </span>
+</span>
+</div>
+<p> </p>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

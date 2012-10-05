@@ -1,0 +1,295 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>coding life2011-11-26~2011-12-27</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p>出差终于结束了。参与的手机客户端在云南也上线了。在昆明的40多天里，最深刻的是那里唱k真便宜，在广州唱一次k在昆明可以唱10次差不多了，而且每次都可以唱大半天，所以我和同事有三周的周末都去了唱k，唱到都有点反感了哈。</p>
+<p> </p>
+<p>12月中返回广州后，一直在想如果部门这边做一个客户端，我会怎么去实现呢。而且也做了些demo出来尝试。不过开会的时候领导一席话就让我觉得有点失望，领导都想所有产品的架构都统一，所以是尽量和云南那边的架构保持一致。哎，或者是自己有选择权的话都是希望用自己的方式去做吧，而且说真的对lk那帮人的代码实在是反感，叫我在他们的代码上面堆积东西，我还真是做不到。反正我是觉得大不了就自己重新实现他们同样的代码好了。</p>
+<p>经常在想，这样的公司，以混日子以人数发挥生产力的公司，到底我还会坚持多久？我们这边的部门还好，看看lk他们的，想想总是觉得可笑。某个老大说的那句，你用这个springmvc干嘛，以后找谁维护的话语经常浮现在我脑海中，然后我就笑了，大侠，你去外面找个springmvc的人比找个懂你那套垃圾框架的容易多了，你手下的人连个springmvc都说搞不定，还值得留么？</p>
+<p> </p>
+<p>吐槽完毕</p>
+<p> </p>
+<p> </p>
+<p><strong>android</strong></p>
+<p> </p>
+<p>1.在配置xml中内容需要&amp;号等的话需要用&amp;amp;来进行转义</p>
+<p> </p>
+<p>2.在mainfest文件中定义service的时候，service前面加.标示这个service为这个程序私有，否则是公共的。</p>
+<p> </p>
+<p>3.通过httpclient获取中文时候会乱码，android默认使用ISO-8859-1 作为编码。可以使用 new String(content.getBytes("ISO-8859-1"),"UTF-8") 这样的方式转码</p>
+<p> </p>
+<p>4.界面ui上面处理过久会造成ui被block住，一种方案是使用AsyncTask</p>
+<p> </p>
+<p>5.widget设置onclicklistener之后一定要记得updatewidget，否则不生效。</p>
+<p> </p>
+<p>6.通过PendingIntent传intent到service的时候，service的时候接受获取extra会取不到之前放的信息，这时候设置</p>
+<p>PendingIntent.getService(context, 0, updateIntent, PendingIntent.FLAG_UPDATE_CURRENT)可以解决。</p>
+<p> </p>
+<p> </p>
+<p><strong>oracle</strong></p>
+<p> </p>
+<p> </p>
+<p>1.on条件是在生成临时表时使用的条件，它不管on中的条件是否为真，都会返回左边表中的记录。</p>
+<p>where条件是在临时表生成好后，再对临时表进行过滤的条件。这时已经没有left join的含义（必须返回左边表的记录）了，条件不为真的就全部过滤掉。</p>
+<p> </p>
+<p>2.case when写法</p>
+<p>CASE  WHEN col3 &gt; 1 AND col3 &lt;2 </p>
+<p>             THEN '1' </p>
+<p>          WHEN col3 &gt; 2 AND col3 &lt;3 </p>
+<p>             THEN '2' </p>
+<p>          WHEN col3 &gt; 3 AND col3 &lt;4 </p>
+<p>             THEN '3' </p>
+<p>          ELSE '4' </p>
+<p> </p>
+<p> </p>
+<p><strong>html</strong></p>
+<p> </p>
+<p>pre标签</p>
+<p>pre 标签内的内容空格分行都会按照内容显示 适合作为代码内容显示</p>
+<p> </p>
+<p> </p>
+<p><strong>css</strong></p>
+<p> </p>
+<p> </p>
+<p>1.不设置table可以使div按照表格的方式来显示的，设置div的display为table /table-row /table-cell等来达到这种效果。</p>
+<p> </p>
+<p>2.换行</p>
+<p><span style="white-space: pre;">	</span>white-space:normal; </p>
+<p><span style="white-space: pre;">	</span>word-break:break-all;</p>
+<p> </p>
+<p> </p>
+<p><strong>js</strong></p>
+<p> </p>
+<p>1.The !! construct is a simple way of turning any JavaScript expression into its boolean equivalent. For example: !!"hello" === true and !!0 === false.</p>
+<p> </p>
+<p>2.</p>
+<p> </p>
+<p>what about a function that isn't explicitly declared as a property of an object? Then the function's</p>
+<p>context refers to the global object</p>
+<p> </p>
+<p>In ECMAScript 3.1 strict mode a slight change has taken place: Just because a</p>
+<p>function isn't defined as a property of an object doesn't meant that its context will be the</p>
+<p>global object. The change is that a function defined within an other function will inherit</p>
+<p>the context of the outer functiond</p>
+<p> </p>
+<p> </p>
+<p>3.function都有length属性，该值为定义的的函数的参数个数。all functions have a length property on them. This property equates to the number of arguments that the function is expecting</p>
+<p> </p>
+<p>4.</p>
+<p> </p>
+<p>一个函数为object加上一个方法，该方法可以根据传入该方法的个数而调用不同的函数</p>
+<p>function addMethod(object, name, fn){</p>
+<p><span style="white-space: pre;">	</span>var old = object[ name ];</p>
+<p><span style="white-space: pre;">	</span>object[ name ] = function(){</p>
+<p><span style="white-space: pre;">	</span>   if ( fn.length == arguments.length )</p>
+<p><span style="white-space: pre;">	</span>       return fn.apply( this, arguments )</p>
+<p><span style="white-space: pre;">	</span>   else if ( typeof old == 'function' )</p>
+<p><span style="white-space: pre;">	</span>       return old.apply( this, arguments );</p>
+<p><span style="white-space: pre;">	</span>};</p>
+<p>}</p>
+<p>它的原理就是最后绑定的函数的参数是否和调用的参数个数相同，相同的话就调用哪个绑定的函数，否则调用上一次绑定的函数。依此类推。所有绑定的函数通过闭包来被该调用的函数引用。</p>
+<p> </p>
+<p>5.</p>
+<p>很多时候，我们会调用Object.toString来获取对象的tostring方法。为什么不使用该fn的tostring方法呢？1.很多的对象可能有自己的tostring的实现。2.内置的对象已经定义了tostring的实现。通过直接使用object.tostring可以按照我们的意愿来获得结果。</p>
+<p> </p>
+<p>The reason why we don't just call fn.toString() to try and get this result is two-fold: 1) Individual</p>
+<p>objects are likely to have their own toString implementation and 2) Most types in JavaScript already have</p>
+<p>a pre-defined toString that overrides the method provided by Object.prototype. By accessing this</p>
+<p>internal method directly we can end up with the exact information that we need.</p>
+<p> </p>
+<p> </p>
+<p>6.</p>
+<p> </p>
+<pre name="code" class="js">Function.prototype.bind = function(){
+     var fn = this, 
+     args = Array.prototype.slice.call(arguments),
+     object = args.shift();
+     return function(){
+        return fn.apply(object,
+         args.concat(Array.prototype.slice.call(arguments)));
+     };
+};</pre>
+ 
+<div>一个绑定方法的实现。</div>
+<div><br></div>
+<div><br></div>
+<div>7.</div>
+<div>
+<div>this._values = this._values || {}; //insure the values is not null</div>
+</div>
+<div><br></div>
+<div>8.</div>
+<div>
+<pre name="code" class="js">Function.prototype.memoize = function(){
+     var fn = this;
+     return function(){
+         return fn.memoized.apply( fn, arguments );
+     };
+};
+var isPrime = (function( num ) {
+     var prime = num != 1;
+     for ( var i = 2; i &lt; num; i++ ) {
+         if ( num % i == 0 ) {
+             prime = false;
+             break;
+         }
+      }
+       return prime;
+}).memoize();</pre>
+</div>
+<div> 为了复用计算过的数据，利用memoized来缓存起计算过的数据。</div>
+<div><br></div>
+<div>9.</div>
+<div>
+<pre name="code" class="js">document.addEventListener("click", (function(){
+     var numClicks = 0;
+    return function(){
+        alert( ++numClicks );
+     };
+})(), false);</pre>
+</div>
+<div> 绑定的事件函数如果需要为该函数设置闭包等可以使用这样的方式。</div>
+<div><br></div>
+<div>10.</div>
+<div>
+<div>&lt;script type="text/template" id="checkout-drawer-template"&gt;</div>
+<div>
+<span style="white-space: pre;">	</span>&lt;div id="checkout-drawer-overlay" class="close-drawer"&gt;&lt;/div&gt;</div>
+<div>
+<span style="white-space: pre;">	</span>&lt;div id="checkout-drawer"&gt;</div>
+<div>
+<span style="white-space: pre;">		</span>&lt;a href="" class="close-drawer with-x"&gt;Close&lt;/a&gt;</div>
+<div>
+<span style="white-space: pre;">		</span>&lt;div class="content"&gt;&lt;%= content || '' %&gt;&lt;/div&gt;</div>
+<div>
+<span style="white-space: pre;">		</span>&lt;div class="actions"&gt;</div>
+<div>
+<span style="white-space: pre;">			</span>&lt;button class="submit"&gt;&lt;%= buttonName || 'Save' %&gt;&lt;/button&gt;</div>
+<div>
+<span style="white-space: pre;">			</span>&lt;a href="" class="close-drawer"&gt;Cancel&lt;/a&gt;</div>
+<div>
+<span style="white-space: pre;">		</span>&lt;/div&gt;</div>
+<div>
+<span style="white-space: pre;">	</span>&lt;/div&gt;</div>
+<div>&lt;/script&gt;</div>
+<div>那不是脚本，而是模板，注意看type="text/template"。你可以放任何代码在这里，浏览器会忽略它，然后你可以使用它们来生成你需要html样式。</div>
+</div>
+<div><br></div>
+<div>11.</div>
+<div>长连接 comet</div>
+<div>http://www.ibm.com/developerworks/cn/web/wa-lo-comet/</div>
+<div><br></div>
+<div>12.</div>
+<div>
+<div>constructor. This is a property that exists on all objects and offers a reference back to the original function that created it.</div>
+</div>
+<div><br></div>
+<div>13.</div>
+<div>
+<pre name="code" class="js">function User(first, last){
+     if ( !(this instanceof arguments.callee) )
+        return new User(first, last);
+    this.name = first + " " + last;
+}</pre>
+</div>
+<div> 如果定义一个对象为user，通常是使用new user来生成对象，但是如果没有调用new的话会将当前的全局对象设置上name属性，通过上述的判断当前对象是否为user来判断是否有加上new关键字，没有的话默认就返回new 一个对象user对象。</div>
+<div><br></div>
+<div>14.</div>
+<div>通常情况下使用/\s/的方式来定义正则的话只需要使用一个斜线。但是如果是使用new regrex的方式的话，因为表达式是使用字符串的形式传入的，所以必须用两个斜线来转义斜线。使用//\s//。</div>
+<div>
+<div>Normally, when creating regular expressions with the /\s/ syntax we only have to provide the backslash once. However, since we're writing these backslashes within a string, we must doubly-escape them.</div>
+</div>
+<div><br></div>
+<div>15.</div>
+<div>
+<pre name="code" class="js">function RegMerge() {
+    var expr = [];
+    for ( var i = 0; i &lt; arguments.length; i++ )
+        expr.push( arguments[i].toString().replace(/^\/|\/\w*$/g, "") );
+    return new RegExp( "(?:" + expr.join("|") + ")" );
+}
+var re = RegMerge( /Ninj(a|itsu)/, /Sword/, /Katana/ );
+assert( re.test( "Ninjitsu" ),
+"Verify that the new expression works." );
+assert( re.test( "Katana" ),
+"Verify that the new expression works." );</pre>
+</div>
+<div> 判断是否适配多个正则</div>
+<div><br></div>
+<div>16.</div>
+<div>
+<div>with</div>
+<div>They allow you to put all the properties of an object within the current scope - as if they were normal JavaScript variables (allowing you to reference them and assign to them - while having their values be maintained in the original object)</div>
+<div>One of the first things that most people try, when using with(){}, is to assign a new property to the</div>
+<div>original object. However, this does not work. It's only possible to use and assign existing properties within the with(){} statement - anything else (assigning to new variables) is handled within the native scope and rules of JavaScript (as if there was no with(){} statement there at all).</div>
+<div>var temp={"test":"test"};</div>
+<div>1.with(temp){</div>
+<div>
+<span style="white-space: pre;">	</span>test="ac";//设置with 的对象的属性将会改变该对象的属性</div>
+<div>
+<span style="white-space: pre;">	</span>test1="fd";//设置的test1为全局对象的属性，非with对象的属性</div>
+<div>}</div>
+<div>with对象的属性会在with 范围内遮盖同名属性</div>
+<div><br></div>
+<div>with ( obj ) { with ( window ) { ... } }</div>
+<div>Will allow you to have the obj object's properties be introduced by with(){}, while having the global</div>
+<div>variables (available by window) take precedence, exclusively.</div>
+<div>通过这种方式，在最内部的代码段内，window对象的属性会覆盖obj的同名属性。</div>
+</div>
+<div><br></div>
+<div>with的用处在类似的变量范围覆盖处理中。或者是通过with(lib1.sublib.channel)这样来减少代码的冗余。</div>
+<div><br></div>
+<div>17.</div>
+<div>eval</div>
+<div>
+<div>The simplest way to determine if a result will be returned from eval is to pretend that the last expression is wrapped in parentheses and still syntactically correct. For example, the code in Listing 8-2 will return values when wrapped in parentheses. It should be noted that anything that isn't a simple variable, primitive, or assignment will actually need to be wrapped in a parentheses in order for the correct value to be returned, for example in Listing 8-3. for example object define or function defition</div>
+</div>
+<div><br></div>
+<div>18.</div>
+<div>
+<div>new Function</div>
+<div>var add = new Function("a", "b", "return a + b;");</div>
+<div>assert( add(3, 4) === 7, "Function is created and works." );</div>
+<div>The last argument to new Function is always the code that will be contained within the function. Any</div>
+<div>arguments that go before it will represent the name of the arguments passed in to the function itself.</div>
+<div>It's important to remember that no closures are created when functions are created in this manner.</div>
+</div>
+<div><br></div>
+<div>19.</div>
+<div>
+<div>The one fool-proof way to execute code in the global scope, across all browsers, is to create a fresh script element, inject the code you wish to execute inside the script, and then quickly inject and remove the script from the document. This will cause the browser to execute the inner contents of the script element within the global scope.</div>
+</div>
+<p> </p>
+<p> </p>
+<p>20.</p>
+<p>regexp</p>
+<p>
+</p>
+<p>\</p>
+<p>Either of the following:</p>
+<p>For characters that are usually treated literally, indicates that the next character is special and not to be interpreted literally.</p>
+<p> </p>
+<p>For example, /b/ matches the character 'b'.By placing a backslash in front of b, that is by using /\b/, the character becomes special to mean match a word boundary.</p>
+<p> </p>
+<p>For characters that are usually treated specially, indicates that the next character is not special and should be interpreted literally.</p>
+<p> </p>
+<p>For example, * is a special character that means 0 or more occurrences of the preceding item should be matched; for example, /a*/ means match 0 or more a's. To match * literally, precede it with a backslash; for example, /a\*/ matches 'a*'.</p>
+<p> </p>
+<p>Also do not forget to escape \ itself while using the new RegExp("pattern") notation since \ is also an escape character in strings.</p>
+<p> </p>
+<p>目标：</p>
+<p>2012年希望学习的语言：lua clojure</p>
+<p>学习linux c方面的知识。</p>
+<p> </p>
+
+<p> </p>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

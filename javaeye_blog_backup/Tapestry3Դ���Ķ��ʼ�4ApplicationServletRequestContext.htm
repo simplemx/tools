@@ -1,0 +1,109 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>Tapestry3源码阅读笔记4:ApplicationServlet/RequestContext</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p>之前都是从Page类以及Page类的创建缓存相关的类去阅读代码，现在换个角度，从请求开始的角度去出发，这样才能将整个流程联系起来。那么开始看tapestry的servlet。</p>
+<p> </p>
+<p><span style="font-size: small;">
+</span></p>
+<div>ApplicationServlet类作为默认的tapestry的servlet。实际就是将请求调用传递给engine进行调用。</div>
+<div><br></div>
+<div>RequestContext类其实就是个封装request/response/session等引用的对象，感觉主要是为了方便传递而创立。</div>
+<div><br></div>
+<div>
+<div>这里细说一下ApplicationServlet，因为应用首先会进入到ApplicationServlet，engine等都是通过ApplicationServlet来触发的。</div>
+<div><br></div>
+<div>首先ApplicationServlet的主要方法就是一个doService。这个方法是每次无论是get请求还是post请求都会触发的，它做了下面几件事：</div>
+<div>1.根据requestt和response创建requestcontext对象。</div>
+<div>2.获取engine。</div>
+<div>3.调用engine的service方法，将requestcontext对象传递进去。</div>
+<div>4.对engine对象进行保存。</div>
+</div>
+<div><br></div>
+<div>
+<div>这里再细说engine的保存。</div>
+<div>首先它会判断有没session存在，session存在的话那么如果是第一次那么会将engine存到session里面，后续的会判断engine的是否是有状态的，有状态的话替换掉之前的engine。</div>
+<div>如果没有session，如果engine是有状态的，那么抛错。否则，它将engine放到enginpool里面，这个enginepool其实也是之前提到Pool类的实例，是ApplicationServlet的实例变量。</div>
+<div><br></div>
+<div>获取engine就是上述过程的一个反过程。首先从session里获取，然后从enginepool里获取，如果没有了，就根据配置文件生成一个engine出来。</div>
+<div><br></div>
+<div>也就是说，engine基本都是每个用户有一个的，因为都存在这个用户对应的session里。</div>
+</div>
+<div><br></div>
+<div>
+<pre class="java" name="code">// Create a context from the various bits and pieces.
+
+context = createRequestContext(request, response);
+
+// The subclass provides the engine.
+
+IEngine engine = getEngine(context);
+
+boolean dirty = engine.service(context);
+
+HttpSession session = context.getSession();
+
+// When there's an active session, we *may* store it into
+// the HttpSession and we *will not* store the engine
+// back into the engine pool.
+
+if (session != null)
+{
+// If the service may have changed the engine and the
+// special storeEngine flag is on, then re-save the engine
+// into the session. Otherwise, we only save the engine
+// into the session when the session is first created (is new).
+
+try
+{
+
+boolean forceStore =
+engine.isStateful() &amp;&amp; (session.getAttribute(_attributeName) == null);
+
+if (forceStore || dirty)
+{
+if (LOG.isDebugEnabled())
+LOG.debug("Storing " + engine + " into session as " + _attributeName);
+
+session.setAttribute(_attributeName, engine);
+}
+}
+catch (IllegalStateException ex)
+{
+
+}
+
+// The engine is stateful and stored in a session. Even if it started
+// the request cycle in the pool, it doesn't go back.
+
+return;
+}
+
+if (engine.isStateful())
+{
+LOG.error(
+Tapestry.format(
+"ApplicationServlet.engine-stateful-without-session",
+engine));
+return;
+}
+
+// No session; the engine contains no state particular to
+// the client (except for locale). Don't throw it away,
+// instead save it in a pool for later reuse (by this, or another
+// client in the same locale).
+
+
+_enginePool.store(engine.getLocale(), engine);</pre>
+ </div>
+<p> </p>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

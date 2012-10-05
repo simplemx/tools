@@ -18,7 +18,7 @@ var gotoBlog = function(url){
 	var param = {
 		url : url,
 		success : callback,
-		dataType : "html"
+		contentType: "text/html; charset=gbk"
 	};
 	$.ajax(param);
 	

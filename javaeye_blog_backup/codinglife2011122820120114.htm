@@ -1,0 +1,267 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>coding life2011-12-28~2012-01-14</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p>踏入2012半个月了，也就眨眼之间的事情。</p>
+<p> </p>
+<p>2012的目标，这半个月想了好久，暂定学习多线程和linux c。虽然我很喜欢javascript，但我说实在对搞页面不是很感兴趣。虽然在目前公司搞的前端不像前端，后台也不像。啥都有份。</p>
+<p> </p>
+<p>学习一到两门语言，clojure、lua。不过不太强求。最好是把目前的提到更深的境界。</p>
+<p> </p>
+<p>平时多写代码，多听听力，多锻炼。</p>
+<p> </p>
+<p>这个一月的目标就是管好自己的习惯，套用一句话，如果连自己的习惯都管不好，还有什么资格去成为有作为的人。</p>
+<p> </p>
+<p> </p>
+<p><strong>css</strong></p>
+<p> </p>
+<p>这半个月有几天一天在纠结css，因为有个项目的页面被字符跨行移位等搞得局方脾气大发，让我去根据现有的样式去改掉它。</p>
+<p> </p>
+<p>首先那个项目的页面都是通过float去定位的，而且高度什么的都全设置死了，如果字体不要过长，那还不会发生什么，但一旦过长了，就会覆盖到下一行去了。而且如果设置浏览器的大小比例，也会发生移位覆盖的现象。</p>
+<p> </p>
+<p>现有的页面的肯定不要随便改动，那只好从css入手了，纠结了一下，最后决定修正为用display-table的方式去显示。不过这样改动，涉及的页面是有点多，而且必须一个一个页面取查看。否则你不知道以前的设置是不是合理。那个项目页面比较多。没办法，干脆搞了个py程序去检查每个页面的样式嵌套布局是否正常，报错的就修正下。</p>
+<p><a href="https://github.com/simplemx/CssTableDisplayChecker">https://github.com/simplemx/CssTableDisplayChecker</a></p>
+<p>这样的改动有几个注意的地方：</p>
+<p>1.如果要实现列合并的效果，用css的方式是不可以实现的，只有分开几个table来进行显示，比如要实现以下这样的效果：</p>
+<p>
+</p>
+<pre class="html" name="code">&lt;table&gt;
+&lt;tr&gt;
+&lt;td&gt;clo1&lt;/td&gt;
+&lt;td&gt;clo2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td colspan="2"&gt;clo3&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+</pre>
+
+<p> 那么应该用这样的方式来实现：</p>
+<p>
+</p>
+<pre class="html" name="code">&lt;div class="table"&gt;
+&lt;div class="row"&gt;
+&lt;div class="cell"&gt;clo1&lt;/div&gt;
+&lt;div class="cell"&gt;clo2&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="table"&gt;
+&lt;div class="row"&gt;
+&lt;div class="cell"&gt;clo3&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</pre>
+
+<p> 2.原有不兼容display-table方式的话，必须改动文件。</p>
+<p> </p>
+<p>话说回来，这个是苦差事，原有的样式太那个啥了。用了display-table后，基本就不会有过长覆盖的问题出现了。</p>
+<p> </p>
+<p> </p>
+<p>android</p>
+<p>使用startactivityforresult这个方法的话，如果resultcode如果不大于0 那么不会触发onresult方法</p>
+<p> </p>
+<p> </p>
+<p><strong>clojure</strong></p>
+<p> </p>
+<p>1.</p>
+<p>
+</p>
+<p>the results of evaluating the three most recent expressions</p>
+<p>are stored in the special variables *1, *2, and *3</p>
+<p>The *e special variable holds the last exception.</p>
+<p>2.</p>
+<p>
+</p>
+<p>Write a function which, given a key and map, returns true iff the map contains an entry with that key and its value is nil.</p>
+<p>(true?  (__ :a {:a nil :b 2}))</p>
+<p><span style="white-space: pre;">	</span></p>
+<p>(false? (__ :b {:a nil :b 2}))</p>
+<p><span style="white-space: pre;">	</span></p>
+<p>(false? (__ :c {:a nil :b 2}))</p>
+<p> </p>
+<p> </p>
+<p>Code which fills in the blank:</p>
+<p>(fn [k,m] (</p>
+<p>  if (contains? m k) </p>
+<p>  (nil? (m k))</p>
+<p>  false  ))</p>
+
+<p> </p>
+<p>3.</p>
+<p>4clojure.com是个不错的地方</p>
+
+<p> </p>
+<p><strong>javascript</strong></p>
+<p>1.</p>
+<p>
+</p>
+<p>foo = +document.getElementById("foo-input").value;</p>
+<p>      ^ unary + operator will convert its right side operand to a number</p>
+<p>单元的+号会转换右边的为number</p>
+<p>
+</p>
+<pre class="js" name="code">var number = 1,
+    string = "1",
+    bool = false;
+
+number;
+// 1
+
+number + "";
+// "1"
+
+string;
+ // "1"
+
++string;
+// 1
+
++string++;
+// 1
+
+string;
+// 2
+
+bool;
+// false
+
++bool;
+// 0
+
+bool + "";
+// "false"
+var number = 1,
+    string = "1",
+    bool = true;
+
+string === number;
+// false
+
+string === number + "";
+// true
+
++string === number;
+// true
+
+bool === number;
+// false
+
++bool === number;
+// true
+
+bool === string;
+// false
+
+bool === !!string;
+// true</pre>
+
+<p> </p>
+
+<p><strong>python</strong></p>
+<p> </p>
+<p>这几天看python的正则比较多</p>
+<p><a href="http://docs.python.org/howto/regex.html#regex-howto">http://docs.python.org/howto/regex.html#regex-howto</a></p>
+<p><a href="http://www.cnblogs.com/huxi/archive/2010/07/04/1771073.html">http://www.cnblogs.com/huxi/archive/2010/07/04/1771073.html</a></p>
+<p> </p>
+<p>1.</p>
+<p>
+</p>
+<p>match()<span style="white-space: pre;">	</span></p>
+<p>Determine if the RE matches at the beginning of the string.</p>
+<p>是否正则表达式匹配字符串的开头</p>
+<p> </p>
+<p>search()<span style="white-space: pre;">	</span></p>
+<p>Scan through a string, looking for any location where this RE matches.</p>
+<p>遍历字符串，查找任意正则匹配的位置</p>
+<p> </p>
+<p>findall()<span style="white-space: pre;">	</span></p>
+<p>Find all substrings where the RE matches, and returns them as a list.</p>
+<p>查找所有符合正则表达式的子字符串，并且以list的形式返回</p>
+<p> </p>
+<p>finditer()<span style="white-space: pre;">	</span></p>
+<p>Find all substrings where the RE matches, and returns them as an iterator.</p>
+<p>查找所有符合正则表达式的子字符串，并且以iterator的方式返回</p>
+
+<p> </p>
+<p>注意match是只匹配开始，以前大头虾一直以为它是整个匹配的。</p>
+<p> </p>
+<p>2.</p>
+<p>
+</p>
+<p>re.S</p>
+<p>re.DOTALL</p>
+<p>Makes the '.' special character match any character at all, including a newline; without this flag, '.' will match anything except a newline.</p>
+<p>如果不使用这个标志，.可以匹配任何字符但不匹配换行字符，比如</p>
+<p>使用正则匹配一个html的标签,正则可能是这样的，p = re.compile(r'&lt;.*&gt;')。但是这个正则对于换了行的标签是不起作用的，因为.不匹配换行，所以，要加上上面的这个标志就可以匹配了。p = re.compile(r'&lt;.*&gt;',re.S)</p>
+<p> </p>
+<p> </p>
+<p>re.M</p>
+<p>re.MULTILINE</p>
+<p>(^ and $ haven’t been explained yet; they’ll be introduced in section More Metacharacters.)</p>
+<p>Usually ^ matches only at the beginning of the string, and $ matches only at the end of the string and immediately before the newline (if any) at the end of the string. When this flag is specified, ^ matches at the beginning of the string and at the beginning of each line within the string, immediately following each newline. Similarly, the $ metacharacter matches either at the end of the string and at the end of each line (immediately preceding each newline).</p>
+<div><br></div>
+
+<p>3.</p>
+<p>py的正则表达式是贪婪式的，它会尽可能的匹配更多的子字符串。所以，如果你使用上面的正则，如果是有多行标志的话，那么，他会返回最开始的&lt;号和最后的&gt;号，整个html差不多都会当成一个子字符串来返回，不管中间是有&lt;还是&gt;。这时候怎么办呢？</p>
+<p>使用*？</p>
+<p> </p>
+<p>
+</p>
+<p>*?</p>
+<p>
+</p>
+<p>In this case, the solution is to use the non-greedy qualifiers *?, +?, ??, or {m,n}?, which match as little text as possible. </p>
+<p>In the above example, the '&gt;' is tried immediately after the first '&lt;' matches, and when it fails, the engine advances a character at a time, retrying the '&gt;' at every step. This produces just the right result:</p>
+<p> </p>
+<p>&gt;&gt;&gt;</p>
+<p>&gt;&gt;&gt; print re.match('&lt;.*?&gt;', '&lt;html&gt;&lt;head&gt;&lt;title&gt;Title&lt;/title&gt;').group()</p>
+<p>&lt;html&gt;</p>
+
+<p> </p>
+<p> </p>
+<p>这时候就才会将一个正确的标签返回（其实如果标签里面的字符串有&lt;&gt;还是会有错误的- -）</p>
+
+<p> </p>
+<p>4.</p>
+<p>
+</p>
+<p>\section<span style="white-space: pre;">	</span>Text string to be matched</p>
+<p>\\section<span style="white-space: pre;">	</span>Escaped backslash for re.compile()</p>
+<p>"\\\\section"<span style="white-space: pre;">	</span>Escaped backslashes for a string literal</p>
+<p>In short, to match a literal backslash, one has to write '\\\\' as the RE string, because the regular expression must be \\, and each backslash must be expressed as \\ inside a regular Python string literal.</p>
+<p> </p>
+<p>The solution is to use Python’s raw string notation for regular expressions; backslashes are not handled in any special way in a string literal prefixed with 'r', so r"\n" is a two-character string containing '\' and 'n', while "\n" is a one-character string containing a newline. Regular expressions will often be written in Python code using this raw string notation.</p>
+<p> </p>
+<p>"ab*"<span style="white-space: pre;">	</span>r"ab*"</p>
+<p>"\\\\section"<span style="white-space: pre;">	</span>r"\\section"</p>
+<p>"\\w+\\s+\\1"<span style="white-space: pre;">	</span>r"\w+\s+\1"</p>
+
+<p> </p>
+<p>5.</p>
+<p>
+</p>
+<p>\b</p>
+<p>Word boundary. This is a zero-width assertion that matches only at the beginning or end of a word. A word is defined as a sequence of alphanumeric characters, so the end of a word is indicated by whitespace or a non-alphanumeric character.</p>
+<p>There are two subtleties you should remember when using this special sequence. First, this is the worst collision between Python’s string literals and regular expression sequences. In Python’s string literals, \b is the backspace character, ASCII value 8. If you’re not using raw strings, then Python will convert the \b to a backspace, and your RE won’t match as you expect it to. The following example looks the same as our previous RE, but omits the 'r' in front of the RE string.</p>
+<p> </p>
+<p>&gt;&gt;&gt;</p>
+<p>&gt;&gt;&gt; p = re.compile('\bclass\b')</p>
+<p>&gt;&gt;&gt; print p.search('no class at all')</p>
+<p>None</p>
+<p>&gt;&gt;&gt; print p.search('\b' + 'class' + '\b')</p>
+<p>&lt;_sre.SRE_Match object at 0x...&gt;</p>
+<p>Second, inside a character class, where there’s no use for this assertion, \b represents the backspace character, for compatibility with Python’s string literals.</p>
+<p> </p>
+<p>\B</p>
+<p>Another zero-width assertion, this is the opposite of \b, only matching when the current position is not at a word boundary.</p>
+<div><br></div>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

@@ -1,0 +1,58 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>pvz的loading界面</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p>写着js就顺便跑去模拟植物大战僵尸的loading界面，其实挺简单的。不用canvas也应该可以实现的。</p>
+<p><a href="http://1.simplemx.sinaapp.com/pvz/pvz.html">http://1.simplemx.sinaapp.com/pvz/pvz.html</a></p>
+<p> </p>
+<p>ps:找图实在是个很费时间很费精力的活。</p>
+<p>动画效果都是全用图片连起来模拟</p>
+<p>于是产生了下面的一个通用处理类，其实就是通过setinterval将一系列的图片描绘出来。</p>
+<p>
+</p>
+<pre class="js" name="code">function animationTask(fn,delay){
+	this.delay = delay || 200; 
+	this.func = fn||function(){} ;
+}
+animationTask.prototype.start = function(){
+	var fn = this.animate;
+	var selfVar = this;
+	this.bakFunc = function(){fn.apply(selfVar);};
+	this.interval =	window.setInterval(this.bakFunc,this.delay);
+}
+animationTask.prototype.animate = function(){
+	if(typeof(this.func)== "function" &amp;&amp; !this.func()){
+		window.clearInterval(this.interval);
+	}
+}
+function imgsAnimationTask(imgs,x,y,block,delay){
+	this.imgs = imgs || [];
+	this.imgIndex = 0;
+	this.x = x;
+	this.y = y;
+	this.block = block;
+	this.backgroundImgData = null;
+	var fn = function(){
+		if(this.imgIndex == 0){
+			this.backgroundImgData = context.getImageData(this.block.x,this.block.y, this.block.w,this.block.h);
+		}
+		context.clearRect(this.block.x,this.block.y,this.block.w,this.block.h);
+		context.putImageData(this.backgroundImgData,this.block.x,this.block.y);
+		if(this.imgIndex&lt;this.imgs.length){
+			context.drawImage(this.imgs[this.imgIndex++],this.x,this.y);
+			return true;
+		}
+		return false;
+	};
+	animationTask.call(this,fn,delay);
+}</pre>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

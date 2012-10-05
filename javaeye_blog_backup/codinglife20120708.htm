@@ -1,0 +1,529 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>coding life2012-07~08</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p>这段时间感触最多的是习惯。出差一段时间，之前的习惯就全部被破坏掉了，想重拾回来又要浪费不小的心力与心智了，一不小心就很容易又荒废了。</p>
+<p> </p>
+<p>很快又要去出差了，我的2012啊，难道世界末日就在出差中完成？</p>
+<p> </p>
+<p>近段时间再阅读《CSS MASTERY》，是本挺不错的书。对于一直没深入了解的我帮助挺大的。当然了，现实总是很多的不如意，当看着那些html、css、js都乱七八糟，心情不免又烦躁了。</p>
+<p> </p>
+<p> </p>
+<p><strong>CSS</strong></p>
+<p> </p>
+<p>1.</p>
+<p>If you are using an Apache server, talk to your hosts about installing mod_gzip or mod_deflate. All modern browsers can handle files compressed with GZIP, and decompress them on the fly. These</p>
+<p>Apache modules will detect whether your browser can handle such files, and if it can, send a</p>
+<p>compressed version. Server-side compression can reduce your HTML and CSS files by around 80 percent, reducing your bandwidth and making your pages much faster to download. If you don’t have access to these Apache modules, you still may be able to compress your files by following the tutorial found at http://tinyurl.com/8w9rp</p>
+<p>这段话让我想起《构建高性能网站》</p>
+<p> </p>
+<p>2.margin重合</p>
+<p> </p>
+<p>Put simply, when two or more vertical margins meet, they will collapse to form a single margin. The height of this margin will equal the height of the larger of the two collapsed margins.</p>
+<p>When one element is contained within another element, assuming there is no padding or border</p>
+<p>separating margins, their top and/or bottom margins will also collapse together </p>
+<p>It may seem strange at first, but margins can even collapse on themselves. Say you have an empty element with a margin but no border or padding. In this situation, the top margin is touching the bottom margin, and they collapse together (see Figure 3-6).If this margin is touching the margin of another element, it will itself collapse Margin collapsing only happens with the vertical margins of block boxes in the normal flow of the document. Margins between inline boxes, floated, or absolutely positioned boxes never collapse.</p>
+<p> </p>
+<p> </p>
+<p>3.</p>
+<p> </p>
+<p>there is one situation where a block-level element is created even if it has not been explicitly defined—when you add some text at the start of a block-level element like a div. Even though you have not defined the text as a block-level element, it is treated as such</p>
+<p>&lt;div&gt;</p>
+<p>some text</p>
+<p>&lt;p&gt;Some more text&lt;/p&gt;</p>
+<p>&lt;/div&gt;</p>
+<p>In this situation, the box is described as an anonymous block box, since it is not associated with a</p>
+<p>specifically defined element.</p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p>With relative positioning, the element continues to occupy the original space, whether or not it is</p>
+<p>offset. As such, offsetting the element can cause it to overlap other boxes.</p>
+<p> </p>
+<p> </p>
+<p>Relative positioning is actually considered part of the normal flow-positioning model, as the position of the element is relative to its position in the normal flow. By contrast, absolute positioning takes the element out of the flow of the document, thus taking up no space. Other elements in the normal flow of the document will act as though the absolutely positioned element was never there</p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p>4.</p>
+<p> </p>
+<p>Because absolutely positioned elements are taken out of the flow of the document, they have no</p>
+<p>effect on boxes in the normal flow. If you were to enlarge an absolutely positioned box—by increasing the font size, for instance—the surrounding boxes wouldn’t reflow. As such, any change in size can ruin your finely tuned layout by causing the absolutely positioned boxes to overlap.</p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p>5.</p>
+<p>float</p>
+<p>If a floated element is followed by an element in the flow of the document, the element’s box will behave as if the float didn’t exist. However, the textural content of the box retains some memory of the floated element and moves out of the way to make room. In technical terms, a line box next to a floated element is shortened to make room for the floated element, thereby flowing around</p>
+<p>the floated box. In fact, floats were created to allow text to flow around images</p>
+<p> </p>
+<p> </p>
+<p>As you’ve seen, floated elements are taken out of the flow of the document and have no effect on</p>
+<p>surrounding elements. However, clearing an element essentially clears a vertical space for all the</p>
+<p>preceding floated elements.</p>
+<p> </p>
+<p> </p>
+<p>This can be a useful layout tool as it allows surrounding elements to make space for floated elements. This solves the problem you saw earlier with absolute positioning, where changes in vertical height do not affect surrounding elements and can break your design.</p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p>Let’s have a look at floating and clearing in a little more detail. Say you have a picture that you want to float to the left of a block of text. You want this picture and text to be contained in another element with a background color and border. You would probably try something like this:</p>
+<p>.news {</p>
+<p>background-color: gray;</p>
+<p>border: solid 1px black;</p>
+<p>}</p>
+<p>.news img {</p>
+<p>float: left;</p>
+<p>}</p>
+<p>.news p {</p>
+<p>float: right;</p>
+<p>}</p>
+<p>&lt;div class="news"&gt;</p>
+<p>&lt;img src="/img/news-pic.jpg" alt="my pic" /&gt;</p>
+<p>&lt;p&gt;Some text&lt;/p&gt;</p>
+<p>&lt;/div&gt;</p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p>However, because the floated elements are taken out of the flow of the document, the wrapper div takes up no space. How do you visually get the wrapper to enclose the floated element? You need to apply a clear somewhere inside that element (see Figure 3-18). Unfortunately, as there are no existing elements in the example to clear, you could add an empty element under the last paragraph, and clear that.</p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p>One useful side-effect of applying an overflow property of hidden or auto is that it will automatically clear any floats contained within. So this can be a useful way of clearing an element without adding any extra markup. This method is not appropriate in all situations, since setting the box’s overflow property will affect how it behaves. More specifically, this method can force scroll bars or clip content under certain circumstances.</p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p>Using the CSS method, you use the :after pseudo-class in combination with the content declaration to add new content at the end of the specified existing content. In this case, I’m adding a period, as it is a fairly small and unobtrusive character. You don’t want the new content to take up any vertical space or be displayed on the page, so you need to set height to 0 and visibility to hidden. Because cleared elements have space added to their top margin, the generated content needs to have its display property set to block. Once this is done, you can then clear your generated content:</p>
+<p>.clear:after {</p>
+<p>content: ".";</p>
+<p>height: 0;</p>
+<p>visibility: hidden;</p>
+<p>display: block;</p>
+<p>clear: both;</p>
+<p>}</p>
+<p> </p>
+<p> </p>
+<p>6.</p>
+<p> </p>
+<p>opacity</p>
+<p>.alert {</p>
+<p>background-color: #000;</p>
+<p>border-radius: 2em;</p>
+<p>opacity: 0.8;</p>
+<p>filter: alpha(opacity=80); /*proprietary IE code*/</p>
+<p>}</p>
+<p>The one big problem with CSS opacity is that it’s inherited by the contents of the element you’re</p>
+<p>applying it to.</p>
+<p> </p>
+<p>这时候可以使用rbga来解决。只将背景色透明，其他不变</p>
+<p>RGBa</p>
+<p>RGBa is a mechanism for setting color and opacity in one go. RGB stands for “Red,” “Green,”</p>
+<p>and “Blue,” while the “a” stands for “alpha transparency.” To use RGBa in the previous example</p>
+<p> </p>
+<p> </p>
+<p>7.</p>
+<p> </p>
+<p>background-position属性是通过平面上的x与y坐标定位的,所以通常取两个值.</p>
+<p>例如:</p>
+<p>&lt;percentage&gt; &lt;percentage&gt;</p>
+<p>左上角为0%, 0%. 右下角为100%, 100%.例如58%,56%就是从左上角算起,右移58%,下移56%.</p>
+<p>&lt;length&gt; &lt;length&gt;</p>
+<p>6cm 8cm,从左上角算起,右移6cm,下移8cm.</p>
+<p> </p>
+<p> </p>
+<p>8.</p>
+<p> </p>
+<p>To ensure your pages are as accessible as possible, it is always a good idea to add a :focus pseudo-class to your links when defining hover states. This will allow your links to take on the same styles when they are tabbed to using the keyboard as they have when hovered over using the mouse.</p>
+<p> </p>
+<p> </p>
+<p>9.</p>
+<p> </p>
+<p>&lt;a href="http://example.com/story.htm#comment3"&gt;</p>
+<p>A great comment by Simon</p>
+<p>&lt;/a&gt;</p>
+<p>当点击a连接跳到comment3，此时如果要对被跳到的这些区域进行设置，可以使用target</p>
+<p>.comment:target {</p>
+<p>background-color: yellow;</p>
+<p>}</p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p>a[href^="http:"] {</p>
+<p>background: url(/img/externalLink.gif) no-repeat right top;</p>
+<p>padding-right: 10px;</p>
+<p>}</p>
+<p>为外部链接加上样式</p>
+<p> </p>
+<p>a[href$=".pdf"] {</p>
+<p>background: url(img/pdfLink.gif) no-repeat right top;</p>
+<p>padding-right: 10px;</p>
+<p>}</p>
+<p>a[href$=".doc"] {</p>
+<p>background: url(img/wordLink.gif) no-repeat right top;</p>
+<p>padding-right: 10px;</p>
+<p>}</p>
+<p>为所有的下载的资源加上样式</p>
+<p> </p>
+<p> </p>
+<p>10.</p>
+<p> </p>
+<p>You may wonder why I am using line-height to control the height of the button instead of height. Well, this is actually a handy little trick for centering the text in the button vertically. If you were to set a height, you would probably have to use padding to push the text down and fake vertical centering.</p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p>links should only ever be used for GET requests, and never for POST requests.</p>
+<p> </p>
+<p>Remember, an absolutely positioned element is positioned in relation to its nearest positioned ancestor or, failing that, the root element. In this example, we have positioned the anchor, so the span is positioned in relation to that</p>
+<p> </p>
+<p> </p>
+<p>11.</p>
+<p>A polyfill, or polyfiller, is a piece of code (or plugin) that provides the technology that you, the developer, expect the browser to provide natively.</p>
+<div><br></div>
+<div>12.</div>
+<div>
+<div>Older versions of Internet Explorer and Opera control list indentation using the left margin, whereas most modern browsers, including Firefox and Safari use left padding. As such, the first thing you will want to do is remove this indentation by zeroing down the margin and padding on the list. To remove the default bullet, you simply set the list style type to none</div>
+</div>
+<div><br></div>
+<div>13.</div>
+<div>
+<div>使用ul内的ul来显示下拉菜单：</div>
+<div>To hide the actual drop-downs until they are activated, we need to set their position to absolute</div>
+<div>and then hide them off the left-hand side of the screen.</div>
+<div>ul.nav li ul {</div>
+<div>width: 8em;</div>
+<div>position: absolute;</div>
+<div>left: -999em;</div>
+<div>}</div>
+<div>Now, this is where the magic happens. By adding a hover pseudo-selector to the parent list item,</div>
+<div>we can make the drop-down list reappear by changing its position back to its regular starting</div>
+<div>position.</div>
+<div>.nav li:hover ul {</div>
+<div>left: auto;</div>
+<div>}</div>
+</div>
+<div><br></div>
+<div>14.</div>
+<div>
+<div> tabel.summary</div>
+<div> &lt;table class="cal" summary="A calendar style date picker"&gt;</div>
+<div> The summary attribute can be applied to the table tag and is used to describe the content of the table. Much like an image’s alt text, the summary should effectively summarize the data in the table, and a well-written summary may alleviate the need to read the contents of the table.</div>
+<div> </div>
+<div> CSS has a border-spacing property that allows you to control the spacing between cells. Unfortunately, IE 7 and below do not understand this property, so you need to fall back on the old but reliable cellspacing attribute. This attribute is, strictly speaking, presentational in nature.</div>
+<div>However, it is still valid HTML and is the only means of controlling cell spacing in IE 6 and 7.</div>
+<div><br></div>
+<div>A Fieldset is used for grouping related blocks of information. In Figure 7-4, two fieldsets are being used: one for the contact details and one for the comments. Most user agents apply a thin border around fieldsets, which can be turned off by setting the border property to none.</div>
+</div>
+<div><br></div>
+<div>15.</div>
+<div>
+<div>However, IE 5.x and IE 6 in quirks mode don’t honor the margin:auto declaration. Luckily, IE misunderstands text-align: center, centering everything instead of just the text. You can use this to your advantage by centering everything in the body tag, including the wrapper div, and realigning the contents of the wrapper back to the left</div>
+<div><br></div>
+<div>16.</div>
+<div>
+<div>percentage positioning</div>
+<div>If you set a background position using pixels, the top-left corner of the image is positioned from</div>
+<div>the top-left corner of the element by the specified number of pixels. With percentage positioning,</div>
+<div>it is the corresponding point on the image that gets positioned. So if you set a vertical and horizontal position of 20 percent, you are actually positioning a point 20 percent from the top left of the image, 20 percent from the top left of the parent element </div>
+</div>
+<div><br></div>
+<div>17.</div>
+<div>
+<div>256 CSS Classes Can Override an #id</div>
+<div>Webkit source: http://trac.webkit.org/browser/trunk/Source/WebCore/css/CSSS...</div>
+<div>Specifically:</div>
+<div>    case Id:</div>
+<div>       s += 0x10000;</div>
+<div>    case Class:</div>
+<div>          s += 0x100;</div>
+<div>id selectors are worth (0x10000/0x100) == 0x100 == 256 class selectors.</div>
+<div>This seems to be the mozilla source: http://hg.mozilla.org/mozilla-central/file/17c65d32c7b8/layo...</div>
+<div>  nsAtomList* list = mIDList;</div>
+<div>   while (nsnull != list) {</div>
+<div>    weight += 0x010000;</div>
+<div>     list = list-&gt;mNext;</div>
+<div>   }</div>
+<div>  list = mClassList;</div>
+<div>   while (nsnull != list) {</div>
+<div>     weight += 0x000100;</div>
+<div>     list = list-&gt;mNext;</div>
+<div>  }</div>
+<div>Same weights, Id = 0x10000, Class = 0x100</div>
+</div>
+</div>
+<div><br></div>
+<div><br></div>
+<div><strong>html</strong></div>
+<p> </p>
+<p>1.</p>
+<p>使用html5的doctype&lt;!DOCTYPE html&gt;可能会引起一些局部的样式问题，比如input便宜、div之间有空格。</p>
+<p>doctype还是xhtml1.0过渡型保险</p>
+<p> </p>
+<p>2.</p>
+<p> </p>
+<p> 40-60% of daily visitors to your site come in with an empty cache. Making your page fast for these first time visitors is key to a better user experience.</p>
+<div><br></div>
+<div><br></div>
+<div><strong>canvas</strong></div>
+<div><br></div>
+<div>1.</div>
+<div>
+<div>使用Global Composite可以做到的一些效果</div>
+<div>利用destination-out 来合并多个图形</div>
+<div>利用source-atop来为一些sprite的个性化，比如个性化不同颜色的角色，飞船等</div>
+</div>
+<div><br></div>
+<div><br></div>
+<div><strong>javascript</strong></div>
+<div><br></div>
+<div>1.</div>
+<div>lazyload</div>
+<div>http://www.qiqiboy.com/2011/04/12/javascript-and-images-lazyload.html</div>
+<div>实际的图片延缓加载是需要在客户端以及服务端协调一起来完成的，不然html加载到img的时候就已经会有请求产生的了。特此还写了个py脚本对静态html进行处理。</div>
+<div><a href="https://github.com/simplemx/tools/tree/master/lazyload">https://github.com/simplemx/tools/tree/master/lazyload</a></div>
+<div><br></div>
+<div>2.</div>
+<div>
+<div>The prototype is only used for properties inherited by objects/instances created by that function. The function itself does not use the associated prototype.</div>
+<div><br></div>
+<div>也就是说, 函数对象的prototype并不作用于原型链查找过程中,</div>
+<div><br></div>
+<div>今天在firefox下发现(因为firefox通过__proto__暴露了[[prototype]]), 真正参与标识符查找的是函数对象的__proto__,</div>
+</div>
+<div><br></div>
+<div>3.</div>
+<div>
+<div>function foo(obj) {</div>
+<div>   productTree = obj.toString();</div>
+<div>   document.getElementById('productTree').innerHTML = productTree;</div>
+<div>}</div>
+<div>在ie下报错:”object doesn’t support this property or method”.</div>
+<div>注意到变量名是productTree没有用var申明, 加上getElementById(‘productTree’)说明有个id为productTree的元素, 并且我们知道在IE下可以直接通过id获取DOM元素的引用, so~</div>
+</div>
+<div><br></div>
+<div>4.</div>
+<div>
+<div>在master regular expression里面有提到过.</div>
+<div><br></div>
+<div>NFA和DFA的引擎是有区别的。js/perl/php/java/.net都是NFA引擎。</div>
+<div>而DFA与NFA机制上的不同带来5个影响：</div>
+<div>1. DFA对于文本串里的每一个字符只需扫描一次，比较快，但特性较少；NFA要翻来覆去吃字符、吐字符，速度慢，但是特性丰富，所以反而应用广泛，当今主要的正则表达式引擎，如Perl、Ruby、Python的re模块、Java和.NET的regex库，都是NFA的。</div>
+<div>2. 只有NFA才支持lazy和backreference（后向引用）等特性；</div>
+<div>3. NFA急于邀功请赏，所以最左子正则式优先匹配成功，因此偶尔会错过最佳匹配结果；DFA则是“最长的左子正则式优先匹配成功”。</div>
+<div>4. NFA缺省采用greedy量词(就是对于/.*/、/\w+/这样的“重复n”次的模式，以贪婪方式进行，尽可能匹配更多字符，直到不得以罢手为止)，NFA会优先匹配量词。</div>
+<div>5. NFA可能会陷入递归调用的陷阱而表现得性能极差。</div>
+<div><br></div>
+<div>backtracking（回朔）</div>
+<div>当NFA发现自己吃多了，一个一个往回吐，边吐边找匹配，这个过程叫做backtracking。由于存在这个过程，在NFA匹配过程中，特别是在编写不合理的正则式匹配过程中，文本被反复扫描，效率损失是不小的。明白这个道理，对于写出高效的正则表达式很有帮助。</div>
+<div><br></div>
+<div>而对于Javascript中的正则来说, 应该是优先匹配量词, 导致了很深的递归, 形成了性能问题…</div>
+<div>var matchs = /^(a+)+$/.exec("aaaaaaaaaaaaaaaaaaaaaaaaaaaX");</div>
+<div>alert(matchs);</div>
+<div>IE8: 30秒</div>
+<div>FF3: 28秒</div>
+<div>号称目前最快的采用V8引擎的Chrome: 8秒.</div>
+</div>
+<div><br></div>
+<div><br></div>
+<div>5.</div>
+<div>onunload:所有浏览器都支持。如果想在onunload事件里用alert会被block住，使用console进行代替。</div>
+<div><br></div>
+<div><br></div>
+<div><strong>java</strong></div>
+<div><br></div>
+<div>1.</div>
+<div>
+<div>http://stackoverflow.com/questions/1429172/how-do-i-list-the-files-inside-a-jar-file</div>
+<div>读取jar内文件。可以使用zip的方式访问jar内的文件内容</div>
+</div>
+<div><br></div>
+<div>2.</div>
+<div>http://blog.christoffer.me/2011/08/how-to-enforce-static-methods-on-class.html</div>
+<div><br></div>
+<div>3.</div>
+<div>
+<div>JSONObject.fromObject 如果转换的对象为有getter方法等需要注意javabean的，因为会按照javabean来转换，所以getter方法不会被生成json，getAttr会被attr来转换。</div>
+</div>
+<div><br></div>
+<div>4.</div>
+<div>String.intern</div>
+<div>
+<pre class="java" name="code">/**
+     * Returns a canonical representation for the string object.
+     * &lt;p&gt;
+     * A pool of strings, initially empty, is maintained privately by the
+     * class &lt;code&gt;String&lt;/code&gt;.
+     * &lt;p&gt;
+     * When the intern method is invoked, if the pool already contains a
+     * string equal to this &lt;code&gt;String&lt;/code&gt; object as determined by
+     * the {@link #equals(Object)} method, then the string from the pool is
+     * returned. Otherwise, this &lt;code&gt;String&lt;/code&gt; object is added to the
+     * pool and a reference to this &lt;code&gt;String&lt;/code&gt; object is returned.
+     * &lt;p&gt;
+     * It follows that for any two strings &lt;code&gt;s&lt;/code&gt; and &lt;code&gt;t&lt;/code&gt;,
+     * &lt;code&gt;s.intern()&amp;nbsp;==&amp;nbsp;t.intern()&lt;/code&gt; is &lt;code&gt;true&lt;/code&gt;
+     * if and only if &lt;code&gt;s.equals(t)&lt;/code&gt; is &lt;code&gt;true&lt;/code&gt;.
+     * &lt;p&gt;
+     * All literal strings and string-valued constant expressions are
+     * interned. String literals are defined in &amp;sect;3.10.5 of the
+     * &lt;a href="http://java.sun.com/docs/books/jls/html/"&gt;Java Language
+     * Specification&lt;/a&gt;
+     *
+     * @return  a string that has the same contents as this string, but is
+     *          guaranteed to be from a pool of unique strings.
+     */</pre>
+</div>
+<div> </div>
+<div>5.</div>
+<div>
+<div>weakreferencemap</div>
+<div>class ObjectPoolClient {</div>
+<div>
+<span style="white-space: pre;">	</span>private static WeakObjectPool objectPool = new WeakObjectPool();</div>
+<div><br></div>
+<div>
+<span style="white-space: pre;">	</span>public static void main(String args[]) throws Exception {</div>
+<div>
+<span style="white-space: pre;">		</span>BufferedReader reader = new BufferedReader(new FileReader("input.csv"));</div>
+<div>
+<span style="white-space: pre;">		</span>List&lt;String[]&gt; parsedLines = new ArrayList&lt;String[]&gt;();</div>
+<div>
+<span style="white-space: pre;">		</span>String line;</div>
+<div>
+<span style="white-space: pre;">		</span>while ((line = reader.readLine()) != null) {</div>
+<div>
+<span style="white-space: pre;">			</span>String[] elements = line.split(",");</div>
+<div>
+<span style="white-space: pre;">			</span>for (int i = 0; i &lt; elements.length; i++) {</div>
+<div>
+<span style="white-space: pre;">				</span>// replace the string read from the file with the pool instance</div>
+<div>
+<span style="white-space: pre;">				</span>elements[i] = (String) objectPool.replace(elements[i]);</div>
+<div>
+<span style="white-space: pre;">			</span>}</div>
+<div>
+<span style="white-space: pre;">			</span>parsedLines.add(elements);</div>
+<div>
+<span style="white-space: pre;">		</span>}</div>
+<div>
+<span style="white-space: pre;">		</span>reader.close();</div>
+<div><br></div>
+<div>
+<span style="white-space: pre;">		</span>// Cool, we saved a lot of memory by reusing the repeated strings!</div>
+<div>
+<span style="white-space: pre;">		</span>doSomethingInteresting(parsedLines);</div>
+<div>
+<span style="white-space: pre;">		</span>// Now, we get rid of the references and soon the garbage collector</div>
+<div>
+<span style="white-space: pre;">		</span>// will reclaim the memory</div>
+<div>
+<span style="white-space: pre;">		</span>parsedLines = null;</div>
+<div>
+<span style="white-space: pre;">		</span>doMoreInterestingStuff();</div>
+<div>
+<span style="white-space: pre;">	</span>}</div>
+<div>}</div>
+</div>
+<div><br></div>
+<div>6.</div>
+<div>
+<div>package testPackage;</div>
+<div>class Test {</div>
+<div>    public static void main(String[] args) {</div>
+<div>        String hello = "Hello", lo = "lo";</div>
+<div>        System.out.print((hello == "Hello") + " ");</div>
+<div>        System.out.print((Other.hello == hello) + " ");</div>
+<div>        System.out.print((other.Other.hello == hello) + " ");</div>
+<div>        System.out.print((hello == ("Hel"+"lo")) + " ");</div>
+<div>        System.out.print((hello == ("Hel"+lo)) + " ");</div>
+<div>        System.out.println(hello == ("Hel"+lo).intern());</div>
+<div>    }</div>
+<div>}</div>
+<div>class Other { static String hello = "Hello"; }</div>
+<div>and the compilation unit:</div>
+<div><br></div>
+<div>package other;</div>
+<div>public class Other { static String hello = "Hello"; }</div>
+<div>produces the output:</div>
+<div><br></div>
+<div>true true true true false true</div>
+<div>This example illustrates six points:</div>
+<div><br></div>
+<div>Literal strings within the same class (§8) in the same package (§7) represent references to the same String object (§4.3.1).</div>
+<div>Literal strings within different classes in the same package represent references to the same String object.</div>
+<div>Literal strings within different classes in different packages likewise represent references to the same String object.</div>
+<div>Strings computed by constant expressions (§15.28) are computed at compile time and then treated as if they were literals.</div>
+<div>Strings computed at run time are newly created and therefore distinct.</div>
+<div>The result of explicitly interning a computed string is the same string as any pre-existing literal string with the same contents.</div>
+</div>
+<div><br></div>
+<div>7.</div>
+<div>
+<div>If you use the new keyword, a new String object will be created. Note that objects are always on the heap - the string pool is not a separate memory area that is separate from the heap.</div>
+<div><br></div>
+<div>The string pool is like a cache. If you do this:</div>
+<div><br></div>
+<div>String s = "abc";</div>
+<div>String p = "abc";</div>
+<div>then the Java compiler is smart enough to make just one String object, and s and p will both be referring to that same String object. If you do this:</div>
+<div><br></div>
+<div>String s = new String("abc");</div>
+<div>then there will be one String object in the pool, the one that represents the literal "abc", and there will be a separate String object, not in the pool, that contains a copy of the content of the pooled object. Since String is immutable in Java, you're not gaining anything by doing this; calling new String("literal") never makes sense in Java and is unnecessarily inefficient.</div>
+<div><br></div>
+<div>Note that you can call intern() on a String object. This will put the String object in the pool if it is not already there, and return the reference to the pooled string. (If it was already in the pool, it just returns a reference to the object that was already there). See the API documentation for that method for more info.</div>
+<div><br></div>
+</div>
+<div><br></div>
+<div>8.</div>
+<div>
+<div>CharSequence 一个接口标记几个主要方法，char数组的主要基本接口</div>
+<div>Arrays.copyOf:重新创建一个指定长度的char[]空间，并且将待拷贝的数据拷贝过去。这个指定长的控件不会根据待拷贝的数据做优化。</div>
+<div>System.arraycopy:native 方法，将src的指定长度的char array copy 到dest中</div>
+<div>AbstractStringBuilder：Stringbuilder/Stringbuffer的父类。</div>
+<div>append方法：每次调用expandCapacity方法重新调用Arrays.copyOf获取新的char[]空间，然后调用System.arraycopy将待append的字符串copy到新的char空间中。</div>
+</div>
+<div><br></div>
+<div><br></div>
+<div>9.</div>
+<div>
+<pre class="java" name="code">/**
+     * Constructs a string builder with no characters in it and an 
+     * initial capacity of 16 characters. 
+     */
+    public StringBuilder() {
+	super(16);
+    }
+    /**
+     * Constructs a string builder with no characters in it and an 
+     * initial capacity specified by the &lt;code&gt;capacity&lt;/code&gt; argument. 
+     *
+     * @param      capacity  the initial capacity.
+     * @throws     NegativeArraySizeException  if the &lt;code&gt;capacity&lt;/code&gt;
+     *               argument is less than &lt;code&gt;0&lt;/code&gt;.
+     */
+    public StringBuilder(int capacity) {
+	super(capacity);
+    }
+     public StringBuilder(String str) {
+	super(str.length() + 16);
+	append(str);
+    }
+
+</pre>
+ </div>
+<p>默认16的长度，注意可能的话开始传入长度，减少char[]的创建 如果传入字符串，默认增加16个作为空的char[]待append</p>
+<p> </p>
+<p>10. </p>
+<p>
+</p>
+<p>String 内部的split、replace等方法全部是基于正则进行的</p>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

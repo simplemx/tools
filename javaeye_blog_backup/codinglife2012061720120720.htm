@@ -1,0 +1,209 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>coding life2012-06-17~2012-07-20</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p>最近时间基本都是被公司的项目占用了，天天在想哪里可以将基于tapestry的web能怎么可以让后面写业务的可以减少点编写代价。</p>
+<p> </p>
+<p>这一个月以来做的事情基本都是和公司有关的，自己的可视化都没多少时间继续推进。</p>
+<p> </p>
+<p>开始阅读css mastery，叫做对css、html这些有个更深一点的认识和理解，不至于一直停留在novice阶段。或者之后继续阅读javascript web application。当然书要读，但是更要实践。</p>
+<p> </p>
+<p> </p>
+<p><strong>JAVA</strong></p>
+<p> </p>
+<p>1. Class.getInterfaces()方法只会返回当前Class声明的interface，父类等实现的interface是不会返回的。</p>
+<p> </p>
+<p>2.Tapestry。activite 一个page后触发一个方法</p>
+<p> </p>
+<pre name="code" class="java">IRequestCycle cycle = getRequestCycle();
+
+    AppPage page = (AppPage)cycle.getPage(page_name);
+    if (this.pd != null) {
+      page.getPageData().getDBConns().putAll(this.pd.getDBConns());
+    }
+    cycle.activate(page);
+
+    if ((event_name != null) &amp;&amp; (!("".equals(event_name)))) {
+      IActionListener listener = (IActionListener)page.getListeners().getListener(event_name);
+
+      listener.actionTriggered(page, page.getRequestCycle());
+    }
+</pre>
+<p> </p>
+<p> </p>
+<p>3.</p>
+<p> </p>
+<p>Arrays.copyOfRange</p>
+<p>ArrayUtils.addAll</p>
+<p>Arrays</p>
+<p>StringUtils</p>
+<p>ArraysUtil</p>
+<p>Collections</p>
+<p>CollecitonsUtil</p>
+<p> </p>
+<p> </p>
+<p>4.tapestry</p>
+<p> </p>
+<p>如果需要避开tapestry的闭合检查，除了改写源码，还可以在在一个组件中生面div头，</p>
+<p>然后再另外一个组件内使用&lt;script&gt;document.writeln('&lt;\/div&gt;');&lt;/script&gt; 这样的方式来动态关闭div。</p>
+<p> </p>
+<p> </p>
+<p>5.使用ant编译的时候，会出现使用泛型的报错：</p>
+<p><span style="color: #362e2b; font-size: 14px; line-height: 26px;">使用了未经检查或不安全的操作。</span></p>
+<p>此时可以在编译的配置文件中加上</p>
+<p> </p>
+<p>&lt;compilerarg value="-Xlint:deprecation"/&gt;</p>
+<p>&lt;compilerarg value="-Xlint:unchecked"/&gt;</p>
+<p> </p>
+<p>例子：</p>
+<p> </p>
+<pre name="code" class="java">public &lt;T extends Handler&gt; T getHandler(PageData pd, Class cls)
+			throws ActionException {
+		
+			return (T) SessionBeanFactory.getHandler(pd.getRequest(), cls);
+		
+	}
+
+public &lt;T extends Handler&gt; T getHandler(PageData pd)
+			throws ActionException {
+		....
+		try {
+			Class cls = Class.forName(handlerClassName);
+			return getHandler(pd, cls);
+		} catch (Exception e) {
+			throw new ActionException(e.getMessage());
+		}
+	}</pre>
+<p> </p>
+<p> 上述的第二个方法在ant编译的时候还是会报错的，必须为调用gethandler方法的返回加上转义(T)才可以。突然觉得这里比较脑残。</p>
+<p> </p>
+<p> </p>
+<p><strong>CSS</strong></p>
+<p> </p>
+<p>1.css animation</p>
+<p> </p>
+<p>window.requestAnimationFrame</p>
+<p>Tells the browser that you wish to perform an animation; this requests that the browser schedule a </p>
+<p>repaint of the window for the next animation frame.  The method takes as an argument a callback to be invoked before the repaint.</p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p>2.对margin属性的左右边距设置为auto可以让层居中显示。margin的4个属性分别为上右下左</p>
+<p>例子：</p>
+<p>margin:10px auto;</p>
+<p> </p>
+<p> </p>
+<p><strong>JAVASCRIPT</strong></p>
+<p> </p>
+<p>1.以下为阅读backbone源码时候觉得挺不错的写法。感觉backbone的源码挺好的。不长也写的很清晰。</p>
+<p> </p>
+<p>js 获取可能为空的变量值的同事给它初始化值</p>
+<p>var calls = this._callbacks || (this._callbacks = {});</p>
+<p> </p>
+<p> </p>
+<p>避免命名冲突</p>
+<p>var previousBackbone = root.Backbone;将原有的backbone保留下来</p>
+<p>如果需要避免冲突，那么调用noconflict方法，调用之前的backbone已经是最新的，调用后恢复为原来的，并且返回新的</p>
+<p>Backbone.noConflict = function() {</p>
+<p>    root.Backbone = previousBackbone;</p>
+<p>    return this;</p>
+<p>  };</p>
+<p> </p>
+<p> </p>
+<p>2.获取文本内容</p>
+<p>$("$input").attr("value");</p>
+<p> </p>
+<p>3.</p>
+<p>
+</p>
+<p>Location hash Property</p>
+<p>通过location.hash可以获取，一般用于如跳到当前页的某一部分，或者利用ajax局部说新页面，为了和之前的识别那么会为其加上hash。比如之前的jquerymobile。</p>
+
+<p> </p>
+<p> </p>
+<p> </p>
+<p><strong>CANVAS</strong></p>
+<p> </p>
+<p>1.手动维护transformation matrix</p>
+<p> </p>
+<p>a c e   x_scale x_skew x_trans</p>
+<p>b d f = y_skew y_scale y_trans</p>
+<p>0 0 1<span style="white-space: pre;">	</span>0   <span style="white-space: pre;">	</span>0 <span style="white-space: pre;">		</span>1</p>
+<p> </p>
+<p>context.transform(a, b, c, d, e, f);以上a~f分别为转换矩阵里的上署对应的abcdef</p>
+<p> </p>
+<p>2.</p>
+<p>Global alpha</p>
+<p> </p>
+<pre name="code" class="js">context.globalAlpha = 0.5;
+context.fillStyle = "rgb(255, 123, 172)";
+context.fillRect(100, 100, 100, 100);</pre>
+<p> you could also produce the same effect by setting the fillStyle to an rgba value that includes an alpha value less than 1. The difference with globalAlpha is that it sets the global alpha value that is then</p>
+<p> </p>
+<p>referenced when applying an alpha using something like an rgba color. For example, if the globalAlpha is 0.5 and you then apply a fillStyle with an rgba of alpha 0.5, the resulting alpha will actually be 0.25. The global alpha value of the 2d rendering context (0.5) acts as the baseline for calculating other alpha values (0.5 * 0.5 = 0.25).</p>
+<p> </p>
+<p>3.</p>
+<p>
+</p>
+<p>shadow</p>
+<p>Creating a shadow in canvas is relatively straightforward and can be manipulated using four possible</p>
+<p>global properties. These properties are shadowBlur, shadowOffsetX, shadowOffsetY, and shadowColor.</p>
+
+<p> </p>
+<p>4.Gradients</p>
+<p>
+</p>
+<pre name="code" class="js">var gradient = context.createLinearGradient(0, 0, 0, canvas.height());
+gradient.addColorStop(0, "rgb(0, 0, 0)");
+gradient.addColorStop(1, "rgb(255, 255, 255)");
+context.fillStyle = gradient;</pre>
+
+<p> </p>
+<p>5.</p>
+<p>
+</p>
+<p>save canvas as img</p>
+<p>var dataURL = canvas.get(0).toDataURL();</p>
+<p>var img = $("&lt;img&gt;&lt;/img&gt;");</p>
+<p>img.attr("src", dataURL);</p>
+<p>canvas.replaceWith(img);</p>
+
+<p> </p>
+<p>6.查找x,y点的rgba</p>
+<p>
+</p>
+<p>var imageData = context.getImageData(0, 0, 3, 3); // 3x3 grid</p>
+<p>var width = imageData.width;</p>
+<p>var x = 2;</p>
+<p>var y = 2;</p>
+<p>var pixelRed = ((y-1)*(width*4))+((x-1)*4);</p>
+<p>var pixelGreen = pixelRed+1;</p>
+<p>var pixelBlue = pixelRed+2;</p>
+<p>var pixelAlpha = pixelRed+3;</p>
+
+<p> </p>
+<p> </p>
+<p><strong>HTML</strong></p>
+<p>
+</p>
+<p>span</p>
+<p>A &lt;span&gt; element used to color a part of a text:</p>
+<p>The &lt;span&gt; tag is used to group inline-elements in a document.</p>
+<p>The &lt;span&gt; tag provides no visual change by itself.</p>
+<p>The &lt;span&gt; tag provides a way to add a hook to a part of a text or a part of a document.</p>
+<p>When the text is hooked in a &lt;span&gt; element you can add styles to the content, or manipulate the content with for example JavaScript.</p>
+
+<p> </p>
+<p><strong>杂</strong></p>
+<p>chrome 禁掉安全机制命令</p>
+<p>chrome -disable-web-security</p>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

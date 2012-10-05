@@ -1,0 +1,102 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>beyond tapestry3</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p>好吧，就让我取这个夸张的名字来夸张一下，其实无他，就是些小扩展。</p>
+<p> </p>
+<p>1.AOP</p>
+<p> </p>
+<div style="text-indent: 2em;">tapestry的Page类的生命周期是tapestry内部管理的，要做aop不控制它的实例化过程是不行的，所以只要捕捉到page类实例化的时候，就能做些手脚了。</div>
+<div style="text-indent: 2em;">page类实例化的地方在org.apache.tapestry.pageload.PageLoader 
+类的instantiatePage 方法内：</div>
+<div style="text-indent: 2em;">
+<div style="text-indent: 2em;"><img height="153" alt="" width="784" src="http://dl.iteye.com/upload/picture/pic/115388/f5c61dc0-6572-367f-8739-56498ba8d3e1.jpg"></div>
+<div><br></div>
+</div>
+<div style="text-indent: 2em;"><img alt=""></div>
+<div style="text-indent: 2em;">将实例化的这行改成 result = (IPage)new ProxyFactory().getProxy(pageClass); 就可以使用代理来做AOP的事情了 
+</div>
+<div style="text-indent: 2em;">ProxyFactory为使用cglib的代理工厂，这里只能使用cglib，不能使用java原生的java.lang.reflect内的代理 
+，因为java.lang.reflect 内的代理是基于interface来实现的。</div>
+<div style="text-indent: 2em;"> </div>
+<div style="text-indent: 2em;">缺点：所有方法都会捕捉，需要开发过滤掉不关心的方法。</div>
+<div style="text-indent: 2em;"> </div>
+<div style="text-indent: 2em;">之前试过使用aspectj插件将整个工程换位apsectj工程的方式也是可以为page类加上aop的。</div>
+<div style="text-indent: 2em;"> </div>
+<div style="text-indent: 2em;">如果大家后续有真的需要为Page类加上aop的话可以参考下。</div>
+<div style="text-indent: 2em;"><br></div>
+<p> </p>
+<div style="text-indent: 0px;">2.html模板</div>
+<div style="text-indent: 0px;">
+<div style="text-indent: 2em;">我们的页面代码总是不可避免的有很多非业务无关的html，这个是因为tapestry的组件的制约，只要是组件就必须要有闭合的标签。</div>
+<div style="text-indent: 2em;">根据我的经历，因为这样那样的原因经常会有页面已经写好了之后需要回去将好几个的页面样式或者组件引用修改等。</div>
+<div style="text-indent: 2em;"><br></div>
+<div style="text-indent: 2em;">于是想到了一个这样的改进：</div>
+<div style="text-indent: 2em;"> <img height="73" alt="" width="431" src="http://dl.iteye.com/upload/picture/pic/115390/01965608-f742-3342-9489-5ac4c10cd46a.jpg">
+</div>
+<div style="text-indent: 2em;">业务界面只需要这样写：</div>
+<div style="text-indent: 2em;"><img alt=""></div>
+<div style="text-indent: 2em;">上述引用的Template.html内容如下：</div>
+<div style="text-indent: 2em;">
+<div>&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"&gt;</div>
+<div>&lt;html xmlns="http://www.w3.org/1999/xhtml"&gt;</div>
+<div>&lt;span jwcid="@Conditional"</div>
+<div>condition="ognl:pageData.getContext().isValidate() == false"&gt;</div>
+<div>&lt;head jwcid="@icsframework:Head"&gt;</div>
+<div>&lt;span jwcid="@HDocHome" /&gt;</div>
+<div>&lt;/head&gt; </div>
+<div>&lt;/span&gt;</div>
+<div>&lt;span jwcid="@Conditional"</div>
+<div>condition="ognl:pageData.getContext().isValidate() == true"&gt;</div>
+<div>&lt;head jwcid="@wade:Head"&gt;</div>
+<div>&lt;span jwcid="@HDoc" /&gt;</div>
+<div>&lt;/head&gt; </div>
+<div>&lt;/span&gt;</div>
+<div>&lt;body jwcid="@Body" onbeforeunload=""&gt;</div>
+<div>&lt;div id="main"&gt;</div>
+<div>&lt;div id="content" class="clearfix"&gt;</div>
+<div>&lt;span jwcid="@Top" /&gt;</div>
+<div><span style="background-color: #ff0000;">&lt;content/&gt;</span></div>
+<div>&lt;/div&gt;</div>
+<div>&lt;div class="clear"&gt;&lt;/div&gt;</div>
+<div>&lt;span jwcid="@Tail" /&gt;</div>
+<div>&lt;/div&gt;</div>
+<div>&lt;/body&gt;</div>
+<div>&lt;/html&gt;</div>
+</div>
+<div style="text-indent: 2em;">上述html内红色为实际业务代码嵌入的位置，也就是在访问这个业务界面的时候，会将业务界面中除&lt;template 
+url="/QUST/Template"/&gt;外的内容替换掉&lt;content/&gt;这个标签。</div>
+<div style="text-indent: 2em;">模板内容支持嵌套。</div>
+<div style="text-indent: 2em;"> </div>
+<div style="text-indent: 2em;">好处：</div>
+<div style="text-indent: 4em;">1.所有的非业务相关的改动只影响模板，而且这个模板改动了是影响全局的，多个业务界面一起改动。</div>
+<div style="text-indent: 4em;">2.业务界面代码清晰明了。</div>
+<div style="text-indent: 4em;">3.便于抽取共性的相同逻辑，例如可以划分出：</div>
+<div style="text-indent: 6em;">最基本的模板（查询界面等使用）</div>
+<div style="text-indent: 6em;">业务办理的模板（嵌套最基本的模板，普通业务办理功能使用）</div>
+<div style="text-indent: 6em;">中心业务的模板（嵌套业务办理的模板，中心业务功能使用）</div>
+<div style="text-indent: 2em;"> </div>
+<div style="text-indent: 2em;">因为&lt;template/&gt; 
+&lt;content/&gt;都是非html的标签，所以不用担心会对html造成影响。</div>
+<div style="text-indent: 2em;"> </div>
+<div style="text-indent: 2em;">这个改进的实现原理，很简单，就是捕捉tapestry在加载页面html的时候，加多一层处理，加载html之后分析html是否有引用模板，有的话对将模板引进来，将模板的内容和html余下的内容进行合并。</div>
+<div style="text-indent: 2em;">并且按我的理解这个改进不会对原有的tapestry流程有任何的影响。</div>
+<div style="text-indent: 2em;">改动的代码在org.apache.tapestry.engine.DefaultTemplateSource.parseTemplate方法内。</div>
+<div style="text-indent: 2em;"><br></div>
+</div>
+<div style="text-indent: 0px;">3.突破component闭合的约束</div>
+<div style="text-indent: 2em;">
+<div>要允许组件标签不闭合，这个对tapestry的改动非常巨大。而如果只是允许普通html的标签的不闭合，然后通过上面一个组件引用开始的标签，下面一个组件使用关闭的标签的话，可以对tapestry的BaseComponentTemplateLoader 
+和TemplateParser 这两个类做些小改动就可以了。</div>
+<div>其实不用改源码也是可以实现这样的效果了，比如在一个组件里输入&lt;div&gt;在另外一个组件里使用js输出&lt;/div&gt;。注意是使用js输出，不能使用html的&lt;/div&gt;。因为如果是纯html会被tapestry检查到。</div>
+</div>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

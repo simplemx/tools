@@ -1,0 +1,42 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>记一个十分诡异的mime-type问题</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p>正在参与的项目开发的过程中一直都是部署在本地的tomcat和weblogic上，而正式环境是bes服务器，开始我还以为是borland的，后来才发现不是，是一家好像叫德宝龙的公司。</p>
+<p> </p>
+<p>当项目部署到bes服务器上之后，发现页面请求js、css、图片的返回的mime-type都是text/html，而之前都是正常的mime-type。这样问题就来了，ie9以下会自动解释css，而firefox和chrome在Transitional的dtd下不会解释这些错误类型的css。导致整个页面在chrome、firefox、ie9上都是没样式的。</p>
+<p> </p>
+<p>然后我就开始了我纠结的一周了。</p>
+<p> </p>
+<p>首先因为工程在tomcat和weblogic都是正常的，所以我怀疑是bes服务器没设置好，于是找资料啊（几乎没有）找他们的支持工程师，结果发现没有设置这些东西的，而且默认就是会将请求为text/css的返回为text/css。实在不行，那么我加多个mime-mapping吧，但是我在web.xml中加上了，啥反应都没有。我将服务器上所有的配置文件都扫了一遍，根本没有设置这个的地方。</p>
+<p> </p>
+<p>纠结之余，我想是不是是这个问题和我们的tapestry有关系，于是我使用一个普通的jsp/servlet应用扔上去，结果很正常，哎，然后我翻了个以前做的和当前工程相同架构的一个todo的demo出来，扔上去，结果还是很正常。难道是这套sb框架有什么人加了些sb操作？于是我翻了工程中所有源码中jar包中的filter、servlet，根本没有对response进行sb操作的地方，而且如果有的话，那么tomcat和weblogic也会暴露出来的，除非那段代码真的很sb。</p>
+<p> </p>
+<p>无奈之余，我将webxml中减少到只有一个servlet，仅仅能让页面跑起来，哎，还是text/html啊。然后我发现，另外一个工程，架构和我们大体一样的，在那个服务器上却是正常的。</p>
+<p> </p>
+<p>不行了，我说实在真找不到哪里出问题，最后我搞了个filter，准备拦截它的css请求，然后通过程序改好mimetype去返回。毕竟本来已经好多sb过滤器将所有请求都拦截了，有性能问题也不会是这个的问题。而且我还做了个缓存，开始的时候就将所有css缓存了起来。</p>
+<p> </p>
+<p>这样看来总可以了吧？</p>
+<p> </p>
+<p>正当我以为问题可以解决的时候，这个filter在服务器上根本跑不进去，所有css的请求仿佛就是跳过了我的过滤器，直接按照原来的方式返回给我了。</p>
+<p> </p>
+<p>这问题够纠结了吧？连filter都不起作用，于是我怀疑是服务器有缓存之类的，因为根本不可能连filter都不进去啊。但是这坑爹服务器上所有相关文件删除了，还是一样，而且我们的服务器也没前置服务器什么的，不会说所有的静态资源的请求都直接访问那边去了。</p>
+<p> </p>
+<p>so，一周下来，我头痛的要死，这就是我人生中碰到的最诡异的问题。</p>
+<p> </p>
+<p>最后也没人找的出来原因，或者最后我会放弃支持ie9，最后就让chrome和firefox解释css算了。</p>
+<p> </p>
+<p>-----------------------</p>
+<p>最后问题解决了，是因为应用起的有问题，应用下的web.xml下的&lt;error-page&gt;下的页面的路径写的有问题，bes服务器校验很严格，应用虽然起来了，但是起的有问题，过滤器之类的全部失效了。</p>
+<p>血的教训啊，虽然我看了日志了，但是我没注意到那么豆丁一行的错误。。。导致了花了这么长的时间。</p>
+<p> </p>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

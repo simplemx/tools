@@ -1,0 +1,316 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>coding life2012-03~2012-6-17</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p>从2月底开始就参与了一个坑爹项目，加班加点做到差不多上线了，以为可以歇一下，结果又马上出差，继续加班加点。</p>
+<p> </p>
+<p>每一天都总怀着焦虑，因为没时间学习新东西，总觉得工作上的内容对我来说帮助太少了。总结，反思也不过如是，归根到底是太少私人时间。项目型公司就是这样的情况的了。</p>
+<p> </p>
+<p>有些的好改变是从开始喜欢看知乎到逐渐的厌倦知乎，因为新的问题实在是很多让人厌烦。相反对v2ex却慢慢的喜欢上了，虽然开始会觉得好像也就那样，但经常看到些有价值的讨论，而且也可以看下其他人到底在做什么事情。</p>
+<p> </p>
+<p>不过总体来说，weibo、zhihu、v2ex这些的浏览时间太多了，呵呵，因为总觉得好像不看呢，就会丧失了什么一样。其实试着将这些链接从浏览器主页干掉之后，一天下来会看少很多，几天之后自己立马明白，恩，自己根本不会少看多少，因为事实上那些东西里有价值的东西不会多。自己花多点时间去做更有价值的事情才是王道。</p>
+<p> </p>
+<p>另外一个相对来说好点的转变就是写博客开始变的勤快了。的确，将自己看的想的，写下来也是另外一种思考，会让人加深印象，而且理解也会更上一个层次。而且从5月开始逐渐的喜欢上用evernote，看着现在那一大堆的tag，有时候也会有压力感，哈哈。</p>
+<p> </p>
+<p>人的成长关键在坚持，习惯。</p>
+<p> </p>
+<p>---------------------------------------</p>
+<p> </p>
+<p><strong>JAVA</strong></p>
+<p> </p>
+<p>1.spring aop</p>
+<p>http://hotpepper.iteye.com/blog/141350</p>
+<p> </p>
+<p>xfire1.*默认支持2.0以下的spring。如果使用spring2.0的话，那么</p>
+<p>Spring 2.x support </p>
+<p>Because of Spring 2.x new feature, services.xml default namespace must not be declared on the root element of configuration ( beans ) and need to be moved to &lt;service&gt; tag level. </p>
+<p>&lt;beans&gt; </p>
+<p>&lt;service xmlns="http://xfire.codehaus.org/config/1.0"&gt; </p>
+<p>&lt;name/&gt; </p>
+<p>&lt;namespace/&gt; </p>
+<p>... </p>
+<p>... </p>
+<p>&lt;/service&gt; </p>
+<p>&lt;/beans&gt;</p>
+<p> </p>
+<p>2.tapestry的html模板页面也和jsp的一样，会将script标签内的&lt;!-- --&gt;不进行解释，&lt;!-- --&gt;外的变量赋值也可以使用标签内容获取tapestry的page变量的值，如</p>
+<p><span style="white-space: pre;">var str = "&lt;span jwcid='@Insert' value='ognl:str'/'&gt;";</span></p>
+<p> </p>
+<p>3.ognl</p>
+<p> </p>
+<p>当ognl表达式里的为单个的字符串的时候，程序里会根据是'还是"来做判断，如果输入的是'那么做char处理，如果是"那么当字符串处理。而如果是多个的话都统一作为字符串处理。请慎重别搞到char和字符串去匹配</p>
+<p>比如#outParam.RESULT_CODE.equals('0')</p>
+<p> </p>
+<p>4.代码里sql的技巧。</p>
+<p> </p>
+<p>如果一条记录。修改了主键再保存，此时需要按照原来的主键查找出原来的记录，但是可能你所获取到的记录的主键已经被改动了，此时可以使用多余的属性保存原来的主键，即可实现</p>
+<p> </p>
+<p> </p>
+<p><strong>CSS</strong></p>
+<p> </p>
+<p>1.如果元素中的内容超出了给定的宽度和高度属性，overflow 属性可以确定是否显示滚动条等行为。</p>
+<p>overflow: scroll.</p>
+<p>这个是绝对的基本常识。</p>
+<p>但是作为一个伪页面仔，很多时候我知道是有属性设置，但是一到写的时候我就经常要查才能写的出来。。。</p>
+<p> </p>
+<p>2.</p>
+<p>html中列过多的话自动会拉伸的好难看，可以将一行分成n行显示。</p>
+<p> </p>
+<p>使用#table td,th {</p>
+<p><span style="white-space: pre;">		</span>  min-width: 9em;</p>
+<p><span style="white-space: pre;">		</span>  width: 9em; </p>
+<p><span style="white-space: pre;">		</span>  max-width: 9em; </p>
+<p>}</p>
+<p>这样的样式可以限制死每行的宽度，必须要有minwidth。</p>
+<p> </p>
+<p>3.</p>
+<p>ie6下table过大的话会很长父div撑开，原有属性table没有设置宽度，加上width：100%即可</p>
+<p> </p>
+<p>4.</p>
+<p> </p>
+<p>定死表格</p>
+<p>table-layout:fixed.</p>
+<p>内容过长换行</p>
+<p>word-wrap:break-word</p>
+<p>兼容性更好 overflow:hidden</p>
+<p> </p>
+<p> </p>
+<p>5.</p>
+<p> </p>
+<p>element.scrollHeight in firefox</p>
+<p>Height of the scroll view of an element; it includes the element padding but not its margin.</p>
+<p>An element's scrollHeight is a measurement of the height of an element's content including content not visible on the screen due to overflow.</p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p>element.clientHeight</p>
+<p>Returns the inner height of an element in pixels, including padding but not the horizontal scrollbar height, border, or margin.</p>
+<p>clientHeight can be calculated as CSS height + CSS padding - height of horizontal scrollbar (if present).</p>
+<div><br></div>
+<div>
+<div>element.offsetHeight</div>
+<div>Typically, an element's offsetHeight is a measurement which includes the element borders, the element vertical padding, the element horizontal </div>
+<div>scrollbar (if present, if rendered) and the element CSS height.</div>
+</div>
+<div><br></div>
+<div>6.position</div>
+<div>static:</div>
+<div>
+<div>left top 等不起作用a static element can’t even create a new coordinate system for child elements</div>
+</div>
+<div>relative:</div>
+<div>类似static，但是left top等起作用</div>
+<div>
+<div>absolute</div>
+<div>an absolutely positioned element is removed from the normal flow.</div>
+<div>比如这样一个布局就是很好的技巧</div>
+<div>
+<pre name="code" class="html">#box_a { 
+position: absolute; 
+top: 10px;
+right: 10px;
+bottom: 10px;
+left: 10px; 
+background: red; 
+}
+#box_b { 
+position: absolute; 
+top: 20px;
+right: 20px; 
+bottom: 20px; 
+left: 20px; 
+background: white;
+}</pre>
+</div>
+<div> fixed：</div>
+<div>
+<div>An element with position: fixed shares all the rules of an absolutely positioned element, except that the viewport (browser/device window) positions the fixed element, as opposed to any parent element. Additionally, a fixed element does not scroll with the document. </div>
+<div>简而言之就是不会随着页面流滚动而动。</div>
+</div>
+</div>
+<div><br></div>
+<div>7.text-align下的元素设置display：为block失效</div>
+<div>text-align from the css standard:</div>
+<div>
+<div>This property describes how inline contents of a block are horizontally aligned</div>
+<div><br></div>
+<div>so when your elements (no matter what they are, divs, spans, inputs, etc.) are inline, text-align has an affect on them, and when theyre display:block, by standard definition, text-align will not align them</div>
+<div><br></div>
+<div>you can fix this by setting margin:0 auto and fixing a width, like steweb suggested, or alternatively (depending on your specific requirements):</div>
+<div><br></div>
+<div>&lt;input type="button" style="display:inline-block;" value="push me" /&gt;</div>
+</div>
+<div><br></div>
+<div>8</div>
+<div>cursor: pointer; 鼠标滑过显示手掌</div>
+<div><br></div>
+<div><br></div>
+<div><strong>HTML</strong></div>
+<div><br></div>
+<div>1.</div>
+<div>
+<div>类似这样的html</div>
+<div>&lt;div id="about"&gt;</div>
+<div>          &lt;p&gt;&lt;/p&gt;&lt;h3&gt;卢涛南&lt;/h3&gt;(Randy)&lt;p&gt;&lt;/p&gt;</div>
+<div>          &lt;p&gt;17 years old&lt;/p&gt;</div>
+<div>          &lt;p&gt;Python,Node.js,Web&lt;/p&gt;</div>
+<div>          &lt;p&gt;&lt;b&gt;I am young,&lt;/b&gt;&lt;/p&gt;&lt;b&gt;</div>
+<div>          &lt;/b&gt;&lt;p&gt;&lt;b&gt;and I am always learning&lt;/b&gt;&lt;/p&gt;</div>
+<div>        &lt;/div&gt;</div>
+<div>应该使用ul来实现分行.</div>
+<div>因为ul本来就是用来做列表的，比使用p在语义上更合适。</div>
+</div>
+<div><br></div>
+<div>2.</div>
+<div>
+<div>&lt;div class="logo" style="background-color: #3A7575"&gt;</div>
+<div>            &lt;img class="inlogo" src="img/weibo.png"&gt;</div>
+<div>          &lt;/div&gt;</div>
+<div>针对以上的html，改成下述的方式</div>
+<div>&lt;a href="xx" style="background:url(图标的url) #abcdef;width:xx;height:xx;"&gt;</div>
+<div>这样就少了div和img的代码量，也减少了请求</div>
+<div>减少了图片的url请求了</div>
+</div>
+<div><br></div>
+<div>3.</div>
+<div>
+<div>&lt;input id="fileBtn" accept="application/vnd.ms-excel" type="file" name="FILE_PATH" /&gt;</div>
+<div>accept 在ie下不支持。。。。</div>
+</div>
+<div><br></div>
+<div><br></div>
+<div><strong>SQL</strong></div>
+<div><br></div>
+<div>1.如果写一个where子句，但是要求条件为空的时候子句不生效，可以这样写</div>
+<div>key=nvl(value,key)。只在oracle下生效，但是在其他数据库也会有类似的函数实现。</div>
+<div><br></div>
+<div>2.</div>
+<div>
+<div>备份sql</div>
+<div>create table dzchannel.WCC_USER_ACTION as select * from wf.WCC_USER_ACTION</div>
+<div><br></div>
+<div>备份sequence相关</div>
+<div>select 'create sequence '||sequence_name||  </div>
+<div>       ' minvalue '||min_value||  </div>
+<div>       ' maxvalue '||max_value||  </div>
+<div>       ' start with '||last_number||  </div>
+<div>       ' increment by '||increment_by||  </div>
+<div>       (case when cache_size=0 then ' nocache' else ' cache '||cache_size end) ||';' </div>
+<div>from dba_sequences where sequence_owner='WF'AND SEQUENCE_NAME ='SEQ_USER_ACTION_ID'</div>
+<div><br></div>
+<div>select * from dba_sequences ds where ds.sequence_name like '%SEQ_USER_ACTION%'</div>
+</div>
+<div><br></div>
+<div><strong>HTTP</strong></div>
+<div><br></div>
+<div>1.MIME-Handling: Sniffing Opt-Out</div>
+<div><br></div>
+<div>
+<div>Internet Explorer’s MIME-sniffing capabilities can lead to security problems for servers hosting untrusted content.  At that time, we announced a new Content-Type attribute (named “authoritative”) which could be used to disable MIME-sniffing for a particular HTTP response. </div>
+<div><br></div>
+<div>Over the past two months, we’ve received significant community feedback that using a new attribute on the Content-Type header would create a deployment headache for server operators. To that end, we have converted this option into a full-fledged HTTP response header.  Sending the new X-Content-Type-Options response header with the value nosniff will prevent Internet Explorer from MIME-sniffing a response away from the declared content-type.</div>
+<div><br></div>
+<div>For example, given the following HTTP-response:</div>
+<div><br></div>
+<div>HTTP/1.1 200 OK </div>
+<div>Content-Length: 108 </div>
+<div>Date: Thu, 26 Jun 2008 22:06:28 GMT </div>
+<div>Content-Type: text/plain; </div>
+<div>X-Content-Type-Options: nosniff</div>
+<div><br></div>
+<div>&lt;html&gt; </div>
+<div>&lt;body bgcolor="#AA0000"&gt; </div>
+<div>This page renders as HTML source code (text) in IE8. </div>
+<div>&lt;/body&gt; </div>
+<div>&lt;/html&gt;</div>
+<div><br></div>
+<div>In IE6 and IE7, the text is interpreted as HTML:</div>
+<div>In IE8, the page is rendered in plaintext:</div>
+<div>而ie9下，上述的http回复也不会被翻译成html，ie9的限制非常严格，mimetype只要是错误的就不进行强制解释。</div>
+</div>
+<p>之前被mime搞郁闷了，这里做下记录，后续应该写个博客记录下。</p>
+<p> </p>
+<p> </p>
+<p>2.</p>
+<p> </p>
+<p>当提交的from为multipart/form-data（为了提交文件到服务端）的时候，form的input的值不能传到后台</p>
+<p>上传文件，表单的enctype就必须设定为"multipart/form-data"了，这样就能够传递文件数据，却无法传递参数</p>
+<p> </p>
+<p>解决方案：往url后传入参数</p>
+<p> </p>
+<p> </p>
+<p><strong>JAVASCRIPT</strong></p>
+<p> </p>
+<p>1.</p>
+<p> </p>
+<p>var a = b = 0;</p>
+<p>他以为，这行代码等同于</p>
+<p>var a = 0, b = 0;</p>
+<p>实际上不是，它的真正效果是下面这样：</p>
+<p>b = 0;</p>
+<p>var a = b;</p>
+<p> </p>
+<p> </p>
+<p>2.</p>
+<p> </p>
+<p>canvas如果使用style 设置width height等100%来实现铺满页面。最后filltext会拉伸很难看</p>
+<p>直接使用js 控制canvas的width 和height，则不会出现上述情况</p>
+<p> </p>
+<p> </p>
+<p>3.</p>
+<p> </p>
+<p>td.innerText 在ie下不会存在内容前有换行的问题，但是在firefox会存在</p>
+<p> </p>
+<p> </p>
+<p>4.window.onpopstate</p>
+<p> </p>
+<p>An event handler for the popstate event on the window.</p>
+<p> </p>
+<p>A popstate event is dispatched to the window every time the active history entry changes.</p>
+<p> If the history entry being activated was created by a call to history.pushState() or </p>
+<p> was affected by a call to history.replaceState(), the popstate event's state property contains</p>
+<p>  a copy of the history entry's state object.</p>
+<p> </p>
+<p>Note that just calling history.pushState() or history.replaceState() won't trigger a popstate event. </p>
+<p>The popstate event is only triggered by doing a browser action such as a click on the back button (or calling history.back() in JavaScript).</p>
+<p> </p>
+<p>5.</p>
+<p>
+</p>
+<p>slice </p>
+<p>返回数组中的一部分。</p>
+<p>splice</p>
+<p>从一个数组中移除一个或多个元素，如果必要，在所移除元素的位置上插入新元素，返回所移除的元素。</p>
+
+<p> </p>
+<p><strong>Python</strong></p>
+<p>
+</p>
+<p> </p>
+<p>1.</p>
+<p>json转换字符串的时候 dumps加入标志ensure_ascii=False 那么就不会转换为unicode</p>
+<p>http://stackoverflow.com/questions/4184108/python-json-dumps-cant-handle-utf-8</p>
+
+<p><strong><br></strong></p>
+<p><strong>SCHEME</strong></p>
+<p> </p>
+<p>
+</p>
+<p>car取第一个元素</p>
+<p>cdj取余下的元素</p>
+<p>这两个函数构造了所有函数</p>
+
+<p> </p>
+<p>FPS:</p>
+<p>fps frame per second 每秒展示多少帧图片.某日突然想到fps这个词，然后意思突然就浮现出来了。</p>
+<p> </p>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

@@ -1,0 +1,58 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>amazing lombok</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p>忘记了几年前了，在javaeye上看到新闻有提到lombok，印象中是提到为java代码减少提供了很好的帮助。还记得当时的讨论是有赞同，但似乎更多的是怀疑。而当时的我这里看看那里看看，没怎么细看这个东西。</p>
+<p> </p>
+<p>几年之后，因为寻找一个利用注解生成getter/setter的想法，想起了lombok，于是一查找，发现这小框架的特性给了我十分大的amazing。</p>
+<p> </p>
+<p>官网<a href="http://projectlombok.org/">http://projectlombok.org</a></p>
+<p> </p>
+<p>首先是getter和setter，代码例子如下（这里直接使用官网的例子:{）：</p>
+<p>
+</p>
+<pre class="java" name="code">@Getter @Setter private int age = 10;
+@Setter(AccessLevel.PROTECTED) private String name;</pre>
+
+<p> </p>
+<p>就可以实时的为当前的类加上getter和setter了，注意，是实时的，因为lombok有eclipse的插件，只要你装上了这个插件，所有的保存都会触发lombok对语法树的改动，从而调用java文件上看不到的setter方法。</p>
+<p> </p>
+<p>然后是@Cleanup</p>
+<p>
+</p>
+<pre class="java" name="code">@Cleanup InputStream in = new FileInputStream(args[0]);
+@Cleanup OutputStream out = new FileOutputStream(args[1]);
+byte[] b = new byte[10000];
+while (true) {
+    int r = in.read(b);
+    if (r == -1) break;
+    out.write(b, 0, r);
+}</pre>
+
+<p> 虽然没记错的话java7有类似的语法特性提升，但是在当前基本还是jdk6jdk5的情况下，这个还是挺爽的。</p>
+<p> </p>
+<p>跟着是我看到十分精细的val</p>
+<p>
+</p>
+<pre class="java" name="code">public String example() {
+ val example = new ArrayList&lt;String&gt;();
+ example.add("Hello, World!");
+ val foo = example.get(0);
+ return foo.toLowerCase();
+}</pre>
+
+<p> val想起了什么？scala的的val，呵呵，本来就不需要人工写的东西为嘛我要写那么多啊，不觉得java写那么多东西总是又长又臭吗？</p>
+<p> </p>
+<p>lombok还有其他特性，详细的可以看官网。</p>
+<p> </p>
+<p>或许对于lombok提供的magic来说，引入来对于项目来说，会对很多人造成影响，有所谓的学习成本。但是换个角度，这个仅仅是减轻代码量的工具，语法还是那样的语法，想一下就能理解的事情，宁愿写那又长又臭的getter、setter，写那又长又臭的变量声明，却不想想怎么可以改变的更好。哎，只能说太悲催了。</p>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

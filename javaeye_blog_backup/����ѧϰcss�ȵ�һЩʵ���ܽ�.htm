@@ -1,0 +1,142 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>近期学习css等的一些实践总结</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p>之前我说自己就是个只兼容chrome的男人，哈哈。</p>
+<p> </p>
+<p>最近随便写个页面练练手，果然，一放到ie6下就错乱了。</p>
+<p> </p>
+<p>其实看书，看文章，看hack都没自己动手来的实在，so，stop reading,just code please。</p>
+<p> </p>
+<p>首先页面是很简单的，就是一个header、content、footer布局的页面。不采用第三方lib，完全手工编写，这样才能碰到问题，才能容易理解到真的问题。不然弄个boostrap，这些个人用的页面真是一下子就出来了。</p>
+<p> </p>
+<p>布局嘛，采用简单的margin auto布局。估计稍微懂点css的都知道了，哎，我也只是最近学习css才知道这个。之前我还一直用display:table来作为布局使用。太惭愧了。</p>
+<p> </p>
+<p>大致我想做的页面是这样的</p>
+<p> </p>
+<p><img height="528" alt="" width="703" src="http://dl.iteye.com/upload/picture/pic/117485/faff6e97-6e6f-310d-a23d-a3d2b89698bd.jpg"></p>
+<p> </p>
+<p>content部分因为有一个sidebar和maincontent区域，所以可以采用float的方式来进行布局。然后需要为float进行clear。这个时候可以采用加一个clear的div或者采用content加个overfloat：hidden的方式。加markup不是个好选择。所以我采用了overflow的方式。</p>
+<p> </p>
+<p>最终的html大致如下：</p>
+<p> </p>
+<pre class="html" name="code">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+	&lt;head&gt;
+		&lt;meta charset="utf-8"&gt;
+		&lt;title&gt;home&lt;/title&gt;
+		&lt;link href="main.css" rel="stylesheet"&gt;
+	&lt;/head&gt;
+	&lt;body&gt;
+		&lt;div id="wrapper"&gt;
+			&lt;div id="header"&gt;
+				&lt;ul id="nav"&gt;
+					&lt;li&gt;Home&lt;/li&gt;
+				&lt;/ul&gt;
+				&lt;img id="logo" src="bird.png"&gt;
+				&lt;/img&gt;
+				&lt;h2&gt;
+					1233
+				&lt;/h2&gt;
+			&lt;/div&gt;
+			&lt;div id="content"&gt;
+				&lt;div class="side_bar"&gt;
+					&lt;p&gt;
+						Category
+					&lt;/p&gt;
+					&lt;ul class ="side_bar_menu"&gt;
+						&lt;li&gt;java&lt;/li&gt;
+						&lt;li&gt;python&lt;/li&gt;
+						&lt;li&gt;javascript&lt;/li&gt;
+						&lt;li&gt;go&lt;/li&gt;
+						&lt;li&gt;linux&lt;/li&gt;
+					&lt;/ul&gt;
+					&lt;p&gt;
+						Recently
+					&lt;/p&gt;
+					&lt;ul class = "side_bar_menu"&gt;
+						&lt;li&gt;test1&lt;/li&gt;
+						&lt;li&gt;test2&lt;/li&gt;
+						&lt;li&gt;test3&lt;/li&gt;
+					&lt;/ul&gt;
+				&lt;/div&gt;
+				&lt;div class="main_content"&gt;
+					&lt;div class="post"&gt;
+						&lt;div class="post_title"&gt;
+							&lt;h3&gt;
+								title1
+							&lt;/h3&gt;
+							&lt;div class="post_detail"&gt;
+								post at
+								&lt;span class="date"&gt;
+									2012-1-1
+								&lt;/span&gt;	
+								tags
+								&lt;span class="tag"&gt;
+									java
+								&lt;/span&gt;
+							&lt;/div&gt;
+						&lt;/div&gt;
+						&lt;div class="post_content"&gt;
+							&lt;p&gt;
+							fkldajfldaj laj fldaj fdlajf adjfkldajf
+							&lt;/p&gt;
+							&lt;p&gt;
+							fdjlakfj dlajf ldajf ldajf
+							fldajklfdjljfdlj
+							&lt;/p&gt;
+						&lt;/div&gt;	
+					&lt;/div&gt;
+					&lt;div class="post"&gt;
+						&lt;div class="post_title"&gt;
+							&lt;h3&gt;
+								title1
+							&lt;/h3&gt;
+							&lt;div class="post_detail"&gt;
+								post at
+								&lt;span class="date"&gt;
+									2012-1-1
+								&lt;/span&gt;	
+
+							&lt;/div&gt;
+						&lt;/div&gt;
+						&lt;div class="post_content"&gt;
+							fkldajfldaj laj fldaj fdlajf adlj
+						&lt;/div&gt;	
+					&lt;/div&gt;
+				&lt;/div&gt;
+			&lt;/div&gt;
+			&lt;div id="footer"&gt;
+				this is footer
+			&lt;/div&gt;
+		&lt;/div&gt;
+	&lt;/body&gt;
+&lt;/html&gt;
+</pre>
+ 
+<p>在chrome、ie8、firefox、ie7下都很好，但是页面一放到ie6，发现出问题了。</p>
+<p> </p>
+<p><img height="491" alt="" width="964" src="http://dl.iteye.com/upload/picture/pic/117487/3e674ee4-39e6-3a14-b8eb-df7791a9fbaa.jpg"></p>
+<p> </p>
+<p>首先来看footer为啥自动float上去了。开始我是怀疑是不是overflow失效了，然后看了下，overfloat没失效。看着那footer明显被自动适配到content下的一个子区域下。omg，这不是float本来应该有的特质么？但是它float到非parent的地方去了。</p>
+<p> </p>
+<p>然后我们再来看图片。这图片明显的和nav平排了。其实我是将header下都居中了。本来图片应该是在nav下面的。但是现在是平行了。</p>
+<p> </p>
+<p>果然，是having layout的问题，我的nav是一个ul，ul默认是没有having layout的，所以，我的几个li 一直排过去，然后img也排在后面了。如果位置足够，连我的h2也会排上去了。</p>
+<p> </p>
+<p>而content那里我也没设置width和height，div默认也是没有layout。它根本没有layout，所以下面的内容就float上来了。所以只要为content、nav设置上width、height之类触发having layout就可以了。</p>
+<p> </p>
+<p>很多的问题，不亲手弄一下折腾一下，是不会有更深的理解的。</p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

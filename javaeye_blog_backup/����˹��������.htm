@@ -1,0 +1,675 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>俄罗斯方块练手</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p>看了下canvas，让我回忆起当年写openGL，然后随便写了个俄罗斯方块来练手，很简易的。后面再优化代码。</p>
+<p> </p>
+<pre class="js" name="code">const FPS = 5;
+SPEED=1;//代表速度一次下落一个单元格 也就是30
+var canvas = null;
+var context = null;
+var width = 11;
+var height = 20;
+//全局map
+var map = [[0,0,0,0,0,0,0,0,0,0,0],
+    	   [0,0,0,0,0,0,0,0,0,0,0],
+	   [0,0,0,0,0,0,0,0,0,0,0],
+	   [0,0,0,0,0,0,0,0,0,0,0],
+	   [0,0,0,0,0,0,0,0,0,0,0],
+	   [0,0,0,0,0,0,0,0,0,0,0],
+	   [0,0,0,0,0,0,0,0,0,0,0],
+	   [0,0,0,0,0,0,0,0,0,0,0],
+	   [0,0,0,0,0,0,0,0,0,0,0],
+	   [0,0,0,0,0,0,0,0,0,0,0],
+           [0,0,0,0,0,0,0,0,0,0,0],
+	   [0,0,0,0,0,0,0,0,0,0,0],
+	   [0,0,0,0,0,0,0,0,0,0,0],
+	   [0,0,0,0,0,0,0,0,0,0,0],
+	   [0,0,0,0,0,0,0,0,0,0,0],
+	   [0,0,0,0,0,0,0,0,0,0,0],
+	   [0,0,0,0,0,0,0,0,0,0,0],
+	   [0,0,0,0,0,0,0,0,0,0,0],
+	   [0,0,0,0,0,0,0,0,0,0,0],
+	   [0,0,0,0,0,0,0,0,0,0,0],
+	  ];
+var tetris=[];//记录显示的当前下落的俄罗斯方块方块，其中第一个为最下面的一个方块
+//tetris.push([0,0]);
+//俄罗斯方块种类
+var tetris_1 = [[5,3],[5,2],[5,1],[5,0]];
+var tetris_z = [[6,2],[5,2],[5,1],[4,1]];
+var tetris_z_reverse = [[4,2],[5,2],[5,1],[6,1]];
+var tetris_block = [[6,1],[5,1],[5,0],[6,0]];
+var tetris_l = [[6,2],[5,2],[5,1],[5,0]];
+var tetris_l_reverse = [[4,2],[5,2],[5,1],[5,0]];
+var tetris_3 = [[5,2],[5,1],[4,2],[6,2]];
+var tetris_array = [tetris_1,tetris_z,tetris_z_reverse,tetris_block,tetris_l,tetris_l_reverse,tetris_3];//所有形状的数组
+var tetris_type = null;
+var direction_0 = 0;
+var direction_90 = 1;
+var direction_180 = 2;
+var direction_270 = 3;
+var currentDirection = null;
+var tetris_direction = [direction_0,direction_90,direction_180,direction_270];
+var tetris_1_90 = [[-2,-1],[-1,0],[0,1],[1,2]];
+var tetris_1_180 = [[2,1],[1,0],[0,-1],[-1,-2]];
+var tetris_1_270 = tetris_1_90;
+var tetris_1_360 = tetris_1_180; 
+var tetris_1_array = [tetris_1_360,tetris_1_90,tetris_1_180,tetris_1_270];
+var tetris_z_90 = [[-1,0],[0,-1],[1,0],[2,-1]];
+var tetris_z_180 = [[1,0],[0,1],[-1,0],[-2,1]];
+var tetris_z_270 = tetris_z_90;
+var tetris_z_360 = tetris_z_180;
+var tetris_z_array = [tetris_z_360,tetris_z_90,tetris_z_180,tetris_z_270];
+var tetris_z_reverse_90 = [[2,0],[1,-1],[0,0],[-1,-1]];
+var tetris_z_reverse_180 = [[-2,0],[-1,1],[0,0],[1,1]];
+var tetris_z_reverse_270 = tetris_z_reverse_90;
+var tetris_z_reverse_360 = tetris_z_reverse_180;
+var tetris_z_reverse_array =[tetris_z_reverse_360,tetris_z_reverse_90,tetris_z_reverse_180,tetris_z_reverse_270];
+var tetris_l_90 = [[-2,0],[-1,-1],[0,0],[1,1]];
+var tetris_l_180 = [[1,0],[1,0],[0,-1],[-2,-1]];
+var tetris_l_270 = [[-1,0],[0,1],[1,2],[2,1]];
+var tetris_l_360 = [[2,0],[0,0],[-1,-1],[-1,-1]];
+var tetris_l_array = [tetris_l_360,tetris_l_90,tetris_l_180,tetris_l_270];
+var tetris_l_reverse_90 = [[2,0],[0,0],[-1,1],[-1,1]];
+var tetris_l_reverse_180 = [[-1,0],[0,-1],[1,-2],[2,-1]];
+var tetris_l_reverse_270 = [[1,0],[1,0],[0,1],[-2,1]];
+var tetris_l_reverse_360 = [[-2,0],[-1,1],[0,0],[1,-1]];
+var tetris_l_reverse_array = [tetris_l_reverse_360,tetris_l_reverse_90,tetris_l_reverse_180,tetris_l_reverse_270];
+var tetris_3_90 = [[0,0],[0,0],[1,-2],[0,-1]];
+var tetris_3_180 = [[0,0],[0,0],[-1,1],[0,0]];
+var tetris_3_270 = [[0,0],[0,0],[0,0],[-1,-1]];
+var tetris_3_360 = [[0,0],[0,0],[0,1],[1,2]];
+var tetris_3_array = [tetris_3_360,tetris_3_90,tetris_3_180,tetris_3_270];
+var tetris_all_array = [tetris_1_array,tetris_z_array,tetris_z_reverse_array,[],tetris_l_array,tetris_l_reverse_array,tetris_3_array];
+
+
+function init(){
+	canvas = document.getElementById('canvas');
+	context = canvas.getContext('2d');
+	setInterval(draw, 1000/FPS);
+}
+function createTetris(){
+	var randomIndex = parseInt(Math.random()*8);
+	var result = [];
+	var elem = null;
+	for(var i=0;i&lt;tetris_array[randomIndex].length;i++){
+		elem = tetris_array[randomIndex][i];
+		result.push([elem[0],elem[1]]);
+		//写到map上面
+		map[elem[1]][elem[0]] = 1;
+	}
+	tetris_type = randomIndex;
+	currentDirection = direction_0;
+	tetris = result;
+}
+function draw(){
+	context.clearRect(0,0,canvas.width,canvas.height);
+	if(tetris.length&lt;1){
+		createTetris();	
+	}
+	drawMap(context);
+	//按照速度下一一个单位
+	dropDown();
+
+}
+function drawMap(context){
+	for(var h=0;h&lt;map.length;h++){
+		for(var w=0;w&lt;map[h].length;w++){
+			if(map[h][w]!=0){
+				context.fillRect(w*30,h*30,30,30);
+			}
+		}
+	}
+}
+function dropDown(){
+	if(canDrop()){
+		for(var i=0;i&lt;tetris.length;i++){
+			//判断是否有下降的俄罗斯方块，有的话往下移，否则已经当前方块上一次已经移动到最底下，
+			//那么清空当前单位的俄罗斯方块
+			//清空map上位置数据
+			map[tetris[i][1]][tetris[i][0]] = 0;	
+			//按照速度往下个位置上设置标志位	
+			tetris[i][1]++;
+			map[tetris[i][1]][tetris[i][0]] = 1;	
+		}
+	}else{
+		//已经到底，那么清空tetris数组 并且进行是否清楚当前行数
+		tetris = [];
+		tetrisExplode();
+	}
+}
+function canDrop(){
+	var all = {};
+	var found = [];
+	for(var i=0;i&lt;tetris.length;i++){
+		if(tetris[i][1] &gt;= height -1) return false;
+		if(map[tetris[i][1]+1][tetris[i][0]] == 1  ){
+			found.push( tetris[i][0]+":"+ (tetris[i][1]+1));
+		}
+		all[tetris[i][0]+":"+ (tetris[i][1])] ="";
+	}
+	for(var i = 0;i&lt;found.length;i++){
+		if(! (found[i] in all)) return false;
+	}
+	return true;
+}
+function tetrisExplode(){
+	//检查每一行是否能够消除
+	for(var i=map.length-1;i&gt;=0;i--){
+		if(map[i].toString().indexOf("0") == -1){
+			//当前行消除，并且上面所有行往下移动
+			for(var j=i;j&gt;=0;j--){
+				map[j] = map[j-1];
+			}
+			map[0]= [0,0,0,0,0,0,0,0,0,0,0];
+		}
+	}
+}
+function notIn(point){
+	for(var i=0;i&lt;tetris.length;i++){
+		if(tetris[i][0] == point[0] &amp;&amp; tetris[i][1] == point[1]) return false;
+	}
+	return true;
+}
+function turnRound(){
+	if(tetris.length &gt;0 ){
+		var nextDirectino = getNextDirection(currentDirection);
+		var typeArray = tetris_all_array[tetris_type];
+		var offsetArray = typeArray[nextDirectino];
+		var tempPosition = [];
+		for(var i=0;i&lt;tetris.length;i++){
+			tempPosition.push([tetris[i][0]+offsetArray[i][0],tetris[i][1]+offsetArray[i][1]]);
+		}
+		for(var i=0;i&lt;tempPosition.length;i++){
+			if(map[tempPosition[i][1]][tempPosition[i][0]] == 1 &amp;&amp; notIn(tempPosition[i])){
+				return;
+			}
+		}
+		for(var i=0;i&lt;tetris.length;i++){
+			map[tetris[i][1]][tetris[i][0]] = 0;	
+			tetris[i][1] = tempPosition[i][1];
+			tetris[i][0] = tempPosition[i][0];
+			map[tetris[i][1]][tetris[i][0]] = 1;
+		}
+		currentDirection = nextDirectino;
+	}
+}
+function getNextDirection(direction){
+	if(direction == direction_0){
+		return direction_90;
+	}else if(direction == direction_90){
+		return direction_180;
+	}else if(direction == direction_180){
+		return direction_270;
+	}else {
+		return direction_0;
+	}
+}
+function moveDown(){
+	if(tetris.length &gt; 0 &amp;&amp; canDrop()){
+		for(var i=0;i&lt;tetris.length;i++){
+			map[tetris[i][1]][tetris[i][0]] = 0;	
+			tetris[i][1]++;
+			map[tetris[i][1]][tetris[i][0]] = 1;	
+			
+		}	
+	}
+}
+function moveLeft(){
+	if(tetris.length&gt;0 &amp;&amp; canMoveLeft()){
+		for(var i=0;i&lt;tetris.length;i++){
+			map[tetris[i][1]][tetris[i][0]] = 0;	
+			tetris[i][0]--;
+			map[tetris[i][1]][tetris[i][0]] = 1;	
+			
+		}	
+	}
+}
+function canMoveLeft(){
+	for(var i=0;i&lt;tetris.length;i++){
+		if(tetris[i][0] == 0) return false;	
+	}
+	return true;
+}
+function moveRight(){
+	if(tetris.length&gt;0 &amp;&amp; canMoveRight()){
+		for(var i=0;i&lt;tetris.length;i++){
+			map[tetris[i][1]][tetris[i][0]] = 0;	
+			tetris[i][0]++;
+			map[tetris[i][1]][tetris[i][0]] = 1;	
+			
+		}	
+	}
+}
+function canMoveRight(){
+	for(var i=0;i&lt;tetris.length;i++){
+		if(tetris[i][0] == width - 1) return false;
+	}
+	return true;
+}
+function keyup(event){
+	if(event.keyCode == 37){//左
+		moveLeft();
+	}else if(event.keyCode == 39){//右
+		moveRight();
+	}else if(event.keyCode == 40){//下降
+		moveDown();
+	}else if(event.keyCode == 32){//空格代表转换
+		turnRound();
+	}
+}
+window.onload = init;
+window.onkeyup = keyup;
+</pre>
+<div><br></div>
+<p>上面的js太挫了，比新手还新手，so，抽了点时间改进了一下，后续加入些完善的功能：</p>
+<p>
+</p>
+<pre class="js" name="code">var manager = new engineManager();
+
+function init(){
+	manager.init();
+}
+
+function engineManager(){
+	this.canvas = null;
+	this.context = null;
+	this.width = null;
+	this.height = null;
+	this.fps = 3;
+}
+engineManager.prototype.init = function(){
+	this.canvas = document.getElementById('canvas');
+	this.context = this.canvas.getContext('2d');
+	objManager.init();
+	controlManager.init();
+	var selfVar = this;
+	var drawMethod = this.draw;
+	setInterval(function (){drawMethod.apply(selfVar);}, 1000/this.fps);
+};
+engineManager.prototype.draw = function(){
+	this.context.clearRect(0,0,this.canvas.width,this.canvas.height);
+	objManager.update();
+};
+
+
+var controlManager = function(){
+	return {
+		init:function(){
+			window.onkeyup = this.keyup;     
+		},
+		keyup:function(){
+			if(!this.objMgr){
+				this.objMgr = objManager;
+			}
+			if(event.keyCode == 37){//左
+				this.objMgr.moveLeft();
+			}else if(event.keyCode == 39){//右
+				this.objMgr.moveRight();
+			}else if(event.keyCode == 40){//下降
+				this.objMgr.moveDown();
+			}else if(event.keyCode == 32){//空格代表转换
+				this.objMgr.turnRound();
+			}
+		},
+	};	
+}();
+
+var objManager = function(){
+	return {
+		controlerMgr:null,
+		engineMgr:null,
+		//以下为游戏业务逻辑变量
+		currentObj:null,
+		bottomTetris:[],
+		tetrisInstances :null,//要延迟加载，否则下面的对象的原型没加载完毕 还是只是带有block的对象，不存在turnround方法的对象
+		speed : 1,
+		height : null,
+		width : null,
+		init:function(){
+			this.engineMgr = manager;
+			this.height = this.engineMgr.canvas.height/30;
+			this.width = this.engineMgr.canvas.width / 30;
+			this.controlerMgr = controlManager;
+			this.currentObj = this.createTetris();
+		},
+		continueDropDown:function(){
+			return this.currentObj.dropDown(this.speed,this.bottomTetris);
+		},
+		update:function(){
+			if(this.bottomTetris){
+				for(var i=0;i&lt;this.bottomTetris.length;i++){
+					this.engineMgr.context.fillRect(this.bottomTetris[i][0]*30,this.bottomTetris[i][1]*30,30,30);
+				}
+			}
+			if(this.currentObj){
+				for(var i=0;i&lt;this.currentObj.blocks.length;i++){
+					this.engineMgr.context.fillRect(this.currentObj.blocks[i][0]*30,this.currentObj.blocks[i][1]*30,30,30);
+				}
+				if(!this.continueDropDown()){
+					this.currentObj.return2BeginState();
+					this.currentObj = null;
+					this.explore();
+				}
+			}else{
+				this.currentObj = this.createTetris();
+			}
+		},
+		createTetris:function(){
+			if (this.tetrisInstances == null){
+				this.tetrisInstances =  [new oneTetris(),new zReverseTertris(),new zTetris(),new blockTetris(),new lTetris(),new lReverseTetris(),new threeTetris()];
+			}
+			return this.tetrisInstances[parseInt(Math.random()*8)];
+		},
+		moveLeft:function(){
+			this.currentObj.moveLeft(this.bottomTetris);
+		},
+		moveRight:function(){
+			this.currentObj.moveRight(this.bottomTetris);
+		},
+		moveDown:function(){
+			this.currentObj.moveDown(this.bottomTetris);
+		},
+		turnRound:function(){
+			this.currentObj.turnRound(this.bottomTetris);
+		},
+		explore:function(){
+			var rowMap = {};
+			var row = null;
+			if(this.bottomTetris.length &gt; 0){
+				for(var i=0;i&lt;this.bottomTetris.length;i++){
+					row = this.bottomTetris[i][1];
+					if(row in rowMap){
+						var values = rowMap[row];
+						values.push(this.bottomTetris[i][0]);	
+					}else{
+						var values = [this.bottomTetris[i][0]];
+						rowMap[row] = values;
+					}
+				}
+				var exploreRow=[];
+				for(var key in rowMap){
+					if(rowMap[key].length == objManager.width){
+						exploreRow.push(key);
+					}
+				}
+				if(exploreRow.length &lt;1 ) return;
+				exploreRow.sort(function(a,b){return a&lt;b});//数字大的在下面，从下面的开始消除
+				var lastRow = 0;
+				var offset = 0;
+				for(var i = 0;i &lt; exploreRow.length;i++){
+					//将消除的上面的行都往下移
+					for(var j=(exploreRow[i]-1+offset);j &gt;= 0;j--){
+						if(j in rowMap){
+							rowMap[j+1] = rowMap[j];
+							lastRow = j;
+						}
+					}
+					//没清除一行，都要清除当前map的最顶行
+					delete rowMap[lastRow];
+					offset++;
+				}
+				//根据rowmap重新生成bottomtetries
+				var newBottomTetris = [];
+				for(var key in rowMap){
+					var values = rowMap[key];
+					for(var i=0;i&lt;values.length;i++){
+						newBottomTetris.push([values[i],key]);
+					}
+				}
+				this.bottomTetris = newBottomTetris;
+			}
+		},
+	};
+}();
+
+var direction_0 = 0;
+var direction_90 = 1;
+var direction_180 = 2;
+var direction_270 = 3;
+
+function tetris(){
+	this.blocks = null;
+	this.vector = null;
+	this.direction = direction_0;
+	
+}
+tetris.prototype.return2BeginState = function(){
+	for(var i=0;i&lt;this.blocks.length;i++){
+		this.blocks[i][0] = this.beginStateBlocks[i][0];
+		this.blocks[i][1] = this.beginStateBlocks[i][1];
+	}
+	this.direction = direction_0;
+};
+tetris.prototype.turnRound = function(bottomTetris){
+	if(this.blocks &amp;&amp; this.vector &amp;&amp; this.vector.length&gt;0 &amp;&amp; this.blocks.length&gt;0 &amp;&amp; this.canTrunRound(bottomTetris) ){
+		var currentVec = this.vector[this.direction];
+		for(var i=0;i&lt;this.blocks.length;i++){
+			this.blocks[i][0] = this.blocks[i][0] + currentVec[i][0];
+			this.blocks[i][1] = this.blocks[i][1] + currentVec[i][1];
+			}	
+			this.direction = this.getNextDirection();
+		}
+	};
+	tetris.prototype.canTrunRound = function(bottomTetris){
+		return true;
+	};
+	tetris.prototype.getNextDirection = function(){
+		if(this.direction == direction_0) return direction_90;
+		if(this.direction == direction_90) return direction_180;
+	if(this.direction == direction_180) return direction_270;
+	if(this.direction == direction_270) return direction_0;	
+	return -1;
+};
+tetris.prototype.dropDown = function(speed,bottomTetris){
+	if(this.blocks &amp;&amp; this.blocks.length &gt; 0 ){
+		if( this.canDropDown(bottomTetris)){
+			for(var i=0;i&lt;this.blocks.length;i++){
+				this.blocks[i][1]+=1;
+			}
+		}else{
+			for(var i=0;i&lt;this.blocks.length;i++){
+				var isAdd = true;
+				for(var j=0;j&lt;bottomTetris.length;j++){
+					if(bottomTetris[j][0] == this.blocks[i][0] &amp;&amp; bottomTetris[j][1] == this.blocks[i][1]){
+						isAdd = false;
+						break;
+					}	
+				}
+				if(isAdd){
+					bottomTetris.push([this.blocks[i][0],this.blocks[i][1]]);
+				}
+			}
+			return false;	
+		}
+	}
+	return true;
+};
+tetris.prototype.getDownPosition = function(){
+	var nextPosition = [];
+	for(var i=0;i&lt;this.blocks.length;i++){
+		nextPosition.push([this.blocks[i][0],this.blocks[i][1]+1]);
+	}
+	return nextPosition;
+};
+tetris.prototype.isInTetrises = function(tetrises,tetris){
+	for(var i=0;i&lt;tetrises.length;i++){
+		if(tetrises[i][0] == tetris[0] &amp;&amp; tetrises[i][1] == tetris[1]){
+			return true;
+		}
+	}
+	return false;
+};
+tetris.prototype.isPositionInTetrises = function(tetrises,positions){
+	for(var i=0;i&lt;positions.length;i++){
+		if(this.isInTetrises(tetrises,positions[i])){
+			return false;	
+		}
+	}
+	return true;
+};
+tetris.prototype.canDropDown = function(bottomTetris){
+	if(this.blocks[0][1]&lt;(objManager.height-1)){
+		return this.isPositionInTetrises(bottomTetris,this.getDownPosition());
+	}
+	return false;
+};
+tetris.prototype.moveLeft = function(bottomTetris){
+	if(this.canMoveLeft(bottomTetris)){
+		for(var i=0;i&lt;this.blocks.length;i++){
+			this.blocks[i][0]-=1;
+		}
+	}
+};
+tetris.prototype.getNextLeftPosition = function(){
+	var nextPosition = [];
+	for(var i=0;i&lt;this.blocks.length;i++){
+		nextPosition.push([this.blocks[i][0]-1,this.blocks[i][1]]);
+	}
+	return nextPosition;
+};
+tetris.prototype.getNextRightPosition = function(){
+	var nextPosition = [];
+	for(var i=0;i&lt;this.blocks.length;i++){
+		nextPosition.push([this.blocks[i][0]+1,this.blocks[i][1]]);
+	}
+	return nextPosition;
+};
+tetris.prototype.canMoveLeft = function(bottomTetris){
+	if(this.blocks){
+		for(var i=0;i&lt;this.blocks.length;i++){
+			if(this.blocks[i][0] == 0){
+				return false;
+			}
+		}
+		return this.isPositionInTetrises(bottomTetris,this.getNextLeftPosition());
+	}
+	return false;
+}
+tetris.prototype.moveRight = function(bottomTetris){
+	if(this.canMoveRight(bottomTetris)){
+		for(var i=0;i&lt;this.blocks.length;i++){
+			this.blocks[i][0]+=1;
+		}	
+	}
+};
+tetris.prototype.canMoveRight = function(bottomTetris){
+	if(this.blocks){
+		for(var i=0;i&lt;this.blocks.length;i++){
+			if(this.blocks[i][0] == objManager.width - 1){
+				return false;
+			}
+		}
+		return this.isPositionInTetrises(bottomTetris,this.getNextRightPosition());
+	}
+	return false;
+};
+tetris.prototype.moveDown = function(bottomTetris){
+	this.dropDown(1,bottomTetris);
+};
+
+
+function oneTetris(){
+	this.beginStateBlocks = [[5,3],[5,2],[5,1],[5,0]];
+	this.blocks = [[5,3],[5,2],[5,1],[5,0]];
+	this.vector = [	[[-2,-1],[-1,0],[0,1],[1,2]],
+		 	[[2,1],[1,0],[0,-1],[-1,-2]],
+			[[-2,-1],[-1,0],[0,1],[1,2]],
+			[[2,1],[1,0],[0,-1],[-1,-2]]
+			];
+}	
+oneTetris.prototype = new tetris();
+
+function zTetris(){
+	this.beginStateBlocks = [[6,2],[5,2],[5,1],[4,1]];
+	this.blocks = [[6,2],[5,2],[5,1],[4,1]];
+	this.vector = [ [[-1,0],[0,-1],[1,0],[2,-1]],
+	 		[[1,0],[0,1],[-1,0],[-2,1]],
+			[[-1,0],[0,-1],[1,0],[2,-1]],
+			[[1,0],[0,1],[-1,0],[-2,1]]
+			];
+}
+zTetris.prototype = new tetris();
+
+function zReverseTertris(){
+	this.beginStateBlocks =  [[4,2],[5,2],[5,1],[6,1]];
+	this.blocks = [[4,2],[5,2],[5,1],[6,1]];
+	this.vector = [	[[2,0],[1,-1],[0,0],[-1,-1]],
+			[[-2,0],[-1,1],[0,0],[1,1]],
+			[[2,0],[1,-1],[0,0],[-1,-1]],
+			[[-2,0],[-1,1],[0,0],[1,1]]
+			];
+}
+zReverseTertris.prototype = new tetris();
+
+function blockTetris(){
+	this.beginStateBlocks =  [[6,1],[5,1],[5,0],[6,0]];
+	this.blocks = [[6,1],[5,1],[5,0],[6,0]];
+	this.vector = [];
+}
+blockTetris.prototype = new tetris();
+
+function lTetris(){
+	this.beginStateBlocks =  [[6,2],[5,2],[5,1],[5,0]];
+	this.blocks = [[6,2],[5,2],[5,1],[5,0]];
+	this.vector = [ [[-2,0],[-1,-1],[0,0],[1,1]],
+	 		[[1,0],[1,0],[0,-1],[-2,-1]],
+	  		[[-1,0],[0,1],[1,2],[2,1]],
+	   		[[2,0],[0,0],[-1,-1],[-1,-1]]
+			];
+}
+lTetris.prototype = new tetris();
+
+function lReverseTetris(){
+	this.beginStateBlocks =  [[4,2],[5,2],[5,1],[5,0]];
+	this.blocks = [[4,2],[5,2],[5,1],[5,0]];
+	this.vector = [	[[2,0],[0,0],[-1,1],[-1,1]],
+	 		[[-1,0],[0,-1],[1,-2],[2,-1]],
+	  		[[1,0],[1,0],[0,1],[-2,1]],
+	   		[[-2,0],[-1,1],[0,0],[1,-1]]
+			];
+}
+lReverseTetris.prototype = new tetris();
+
+function threeTetris(){
+	this.beginStateBlocks =  [[5,2],[5,1],[4,2],[6,2]];
+	this.blocks = [[5,2],[5,1],[4,2],[6,2]];
+	this.vector = [	[[0,0],[0,0],[1,-2],[0,-1]],
+	 		[[0,0],[0,0],[-1,1],[0,0]],
+	 		[[0,0],[0,0],[0,0],[-1,-1]],
+	  		[[0,0],[0,0],[0,1],[1,2]]
+			];
+}
+threeTetris.prototype = new tetris();
+
+window.onload = init;
+</pre>
+ 
+<p> </p>
+<p>html如下：</p>
+<p> <span style="white-space: pre; background-color: #fafafa;"> </span></p>
+<p><span style="white-space: pre; background-color: #fafafa;">&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"&gt;</span></p>
+<pre class="html" name="code"> &lt;html lang="en"&gt;
+    &lt;head&gt;
+       &lt;title&gt;JavaScript test 1&lt;/title&gt;
+       &lt;script type="text/javascript" src="sarah.js"&gt;&lt;/script&gt;
+       &lt;style type="text/css"&gt;
+          body { font-family: Arial,Helvetica,sans-serif;}
+       &lt;/style&gt;
+    &lt;/head&gt;
+   &lt;body&gt;
+      &lt;canvas id="canvas" width="330" height="600" style="border:solid #000 1px"&gt;
+         &lt;p&gt;Your browser does not support the canvas element.&lt;/p&gt;
+      &lt;/canvas&gt;
+   &lt;/body&gt;
+&lt;/html&gt;</pre>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

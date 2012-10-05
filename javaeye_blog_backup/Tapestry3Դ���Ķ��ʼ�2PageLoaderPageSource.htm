@@ -1,0 +1,131 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>Tapestry3源码阅读笔记2:PageLoader/PageSource</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p><span style="">之前提到Page类是缓存在Pool类里的。这里我们来看Page类的保存加载过程。</span></p>
+<p><span style=""><br></span></p>
+<p><span style=""><br></span></p>
+<div style="font-size: medium;"><span style="">Page是通过PageLoader来进行实例化的，PageLoader这个类用做实例化所有组件，包含Page。并且将组件的下属组件进行递归组装。</span></div>
+<div style="font-size: medium;"><span style=""><br></span></div>
+<div style="font-size: medium;"><span style="">这里只看加载Page的loadPage方法，Page类的初始化就是从这个方法中出来的。这个方法里主要的代码如下：</span></div>
+<div style="font-size: medium;"><span style=""><br></span></div>
+<div style="font-size: medium;">
+<pre name="code" class="java"><span style="">page = instantiatePage(name, namespace, specification);
+
+page.attach(_engine);
+
+constructComponent(cycle, page, page, specification, namespace);
+
+// Walk through the complete component tree to set up the default parameter values.
+_establishDefaultParameterValuesWalker.walkComponentTree(page);
+
+establishInheritedBindings();
+
+// Walk through the complete component tree to ensure that required parameters are bound
+_verifyRequiredParametersWalker.walkComponentTree(page);
+
+establishDefaultPropertyValues();
+</span></pre>
+</div>
+<div style="font-size: medium;"><span style="">由此可以看出实例化Page对象是调用instantiatePage方法里，创建了实例后，就是在这里调用attach对象将page和engine关联上的，并且递归调用构建这个page的组件以及相关的属性value。</span></div>
+<div style="font-size: medium;"><span style=""><br></span></div>
+<div style="font-size: medium;"><span style="">看instantiatePage这个方法</span></div>
+<div style="font-size: medium;">
+<pre name="code" class="java"><span style="">        String pageName = namespace.constructQualifiedName(name);
+        String className = spec.getComponentClassName();
+        ILocation location = spec.getLocation();
+
+        if (Tapestry.isBlank(className))
+        {
+//如果查找不到page类的className，那么设置默认的className如果没设置就直接拿BasePage
+            className =
+                _engine.getPropertySource().getPropertyValue(
+                    "org.apache.tapestry.default-page-class");
+
+            if (className == null)
+                className = BasePage.class.getName();
+        }
+
+        Class pageClass = _enhancer.getEnhancedClass(spec, className);
+        String enhancedClassName = pageClass.getName();
+
+        try
+        {
+            result = (IPage) pageClass.newInstance();
+
+            result.setNamespace(namespace);
+            result.setSpecification(spec);
+            result.setPageName(pageName);
+            result.setPage(result);
+            result.setLocale(_locale);
+            result.setLocation(location);
+        }
+        catch (ClassCastException ex)
+        {
+           
+        }
+        catch (Exception ex)
+        {
+           
+        }</span></pre>
+</div>
+<div style="font-size: medium;"><span style=""> page类声明一般都是abstract，然后可以声明abstract的setter和getter，tapestry会帮我们把方法实现，因为tapestry实际的时候描绘的类是我们的page类的子类，就是<span style="white-space: pre;">_enhancer.getEnhancedClass(spec, className);来实现的。</span></span></div>
+<div style="font-size: medium;"><span style=""><br></span></div>
+<div style="font-size: medium;"><span style="">上述就是PageLoader这个类主要做的事情，当然它还负责加载组件。</span></div>
+<div style="font-size: medium;"><span style=""><br></span></div>
+<div style="font-size: medium;"><span style=""><br></span></div>
+<div style="font-size: medium;"><span style="">然后来看PageSource类。</span></div>
+<div style="font-size: medium;"><span style=""><br></span></div>
+<div style="font-size: medium;">
+<div><span style="">PageSource类。作为page的管理容器。所有page的获取和释放都交由PageSource来管理。</span></div>
+<div><span style="">其实它只是个代理，实际保存page的是Pool对象。</span></div>
+<div><span style=""><br></span></div>
+<div><span style="">获取page通过PageSource的getPage方法来实现的，getPage方法首先判断Pool中是否存在这个Page实例，没有的话就通过PageLoader来生成。</span></div>
+<div><span style=""><br></span></div>
+<div><span style="">这里PageLoader的doc是说这个类是非线程安全的，pagesource会每次都生成一个新的实例来构建pageloader。但是从源码的角度，这个doc是错误的，pageload如果是在频繁的创造page的话它会一直存活在pool里面，不停的为不同的page创建。大概扫了一下pageloader的源码应该没有线程安全问题。</span></div>
+</div>
+<div><span style=""><br></span></div>
+<div>
+<pre name="code" class="java"><span style="">IPage result = (IPage) _pool.retrieve(key);
+
+if (result == null)
+{
+
+PageLoader loader = getPageLoader(cycle);
+
+try
+{
+result =
+loader.loadPage(
+pageSpecificationResolver.getSimplePageName(),
+pageSpecificationResolver.getNamespace(),
+cycle,
+pageSpecificationResolver.getSpecification());
+}
+finally
+{
+discardPageLoader(loader);
+discardPageSpecificationResolver(pageSpecificationResolver);
+}
+
+}
+else
+{
+// The page loader attaches the engine, but a page from
+// the pool needs to be explicitly attached.
+
+result.attach(engine);
+}</span></pre>
+<span style=""> </span>
+</div>
+<p><span style="">释放page是在releasePage方法内实现的。好简单。首先调用page的detach方法，然后将page放回到pool中。</span></p>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

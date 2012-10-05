@@ -1,0 +1,97 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>String.intern</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p>有时候，你不得不感到很幸福，真的，在这个年代，有那么多的资料，有那么多的好心人给你写了好多东西来对你提点，来给你指示。自从工作没多久，阅读的书上总是告诫我不要使用String.intern这个方法，当然，书上也有大概的说下为什么，但是，时间已经太久了，我已经忘记了当时书上说的啥，而且，我相信那些翻译出来的书，估计也并没有将东西解释得清楚，而且，当时自己的能力也有限。</p>
+<p> </p>
+<p>因为这么多书、资料的引导，我觉得我是少走了很多弯路。但同时，随着自己知道的事情越多，就越来越发现自己的浅薄。恩，基础真的很重要，就算你心中充满guideline，充满这样那样的指引，还是会因为自己的基础不足和浅薄而碰壁的。</p>
+<p> </p>
+<p>今天查找高效操控java char数组的时候突然翻到String.intern方法，接连翻了几篇文章之后，总算将自己多年前糊里糊涂的理解给解释清楚。</p>
+<p> </p>
+<p>首先，这个是intern是一个native方法，它的doc是这样写的：</p>
+<p>
+</p>
+<pre name="code" class="java">/**
+     * Returns a canonical representation for the string object.
+     * &lt;p&gt;
+     * A pool of strings, initially empty, is maintained privately by the
+     * class &lt;code&gt;String&lt;/code&gt;.
+     * &lt;p&gt;
+     * When the intern method is invoked, if the pool already contains a
+     * string equal to this &lt;code&gt;String&lt;/code&gt; object as determined by
+     * the {@link #equals(Object)} method, then the string from the pool is
+     * returned. Otherwise, this &lt;code&gt;String&lt;/code&gt; object is added to the
+     * pool and a reference to this &lt;code&gt;String&lt;/code&gt; object is returned.
+     * &lt;p&gt;
+     * It follows that for any two strings &lt;code&gt;s&lt;/code&gt; and &lt;code&gt;t&lt;/code&gt;,
+     * &lt;code&gt;s.intern()&amp;nbsp;==&amp;nbsp;t.intern()&lt;/code&gt; is &lt;code&gt;true&lt;/code&gt;
+     * if and only if &lt;code&gt;s.equals(t)&lt;/code&gt; is &lt;code&gt;true&lt;/code&gt;.
+     * &lt;p&gt;
+     * All literal strings and string-valued constant expressions are
+     * interned. String literals are defined in &amp;sect;3.10.5 of the
+     * &lt;a href="http://java.sun.com/docs/books/jls/html/"&gt;Java Language
+     * Specification&lt;/a&gt;
+     *
+     * @return  a string that has the same contents as this string, but is
+     *          guaranteed to be from a pool of unique strings.
+     */
+    public native String intern();</pre>
+
+<p> 这个方法会返回一个String，这个String如果之前在string pool中的话，那么会直接将它的引用返回，如果不在的话，那么会将这个String放到string pool中，并且将引用返回。</p>
+<p> </p>
+<p>这里就牵涉到string pool。在java里，只要是literal string和常量，都会被存放到这个string pool中。这一个知识估计随便一个javaer都知道吧，坑爹的sb面试题new String("abc")创建了多少个**不是漫天都飞吗？</p>
+<p> </p>
+<p>也就是说intern调用之后这个String实际引用的就是string pool里的了。注意，如果原先的Strnig就是literal String或者是常量，它本来就已经是被intern了，这时候调用intern之后返回的仍然是原来的引用。</p>
+<p> </p>
+<p>example：</p>
+<p>
+</p>
+<pre name="code" class="java">public static String getString1(){
+		return "test";
+	}
+	
+	public static String getString2(){
+		return "test";
+	}
+	
+	private static String test1 = "test";
+	public static void main(String[] args){
+		String t = "test";
+		String temp = new String(t).intern();
+		System.out.println(temp == test1);
+		System.out.println(t == test1);
+		System.out.println(getString1() == getString2());
+	}</pre>
+
+<p> 或许，使用intern就是为了下面的这样的场景：</p>
+<p> </p>
+<p>1.需要创造大量的含有重复内容的字符串。这时候看似如果将字符串intern后，相同内容的string就被intern为同一个引用了，节省了控件。</p>
+<p> </p>
+<p>或者你会有这样的疑惑，他们创建的时候不是已经都intern了么？事实是还是有多非literal string和常量的，比如从文本里直接读出来的string等等，这时候这些string实际就是在heap中。不会默认intern了。这时候如果调用intern方法，这些string就会转移到string pool内。事实是会有起到节省内存的效果。</p>
+<p> </p>
+<p>但是，它有副作用，string pool是在perm内，perm的大小通常都比较小，如果intern过多，很容易造成out of memory。当然，perm内也会被回收，但是当字符串过多的被intern之后，造成perm内很满频繁的gc，这是郁闷的。</p>
+<p> </p>
+<p>所以，最好别使用它来对这种场景进行节省内存，而是使用其他方式，比如：<span style="font-size: medium;">http://www.codeinstructions.com/2008/09/instance-pools-with-weakhashmap.html</span></p>
+<p> </p>
+<p>使用自己开发的层面去节省内存，是一个更加的方式。</p>
+<p> </p>
+<p>2.equals方法执行会引起效率问题。这时候如果两个string都被intern的话，==一下子就能判断出来了。</p>
+<p> </p>
+<p>但是转念一想，这个场合估计以前会有，但是，现在基本是不太可能了，现在jvm性能那么猛，就算每次都进行每个char的对比，也不会比查一次web service、db更慢。</p>
+<p> </p>
+<p>而且，每个equals都会进行每个char的比对吗？</p>
+<p> </p>
+<p>参考资料：</p>
+<p>http://hype-free.blogspot.com/2010/03/stringintern-there-are-better-ways.html</p>
+<p><span style="font-size: medium;">http://www.codeinstructions.com/2009/01/busting-javalangstringintern-myths.html</span></p>
+<p> </p>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

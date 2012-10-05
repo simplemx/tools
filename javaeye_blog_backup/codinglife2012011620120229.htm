@@ -1,0 +1,473 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>coding life2012-01-16~2012-02-29</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p>眨眼间这二月就即将过去了。新年似乎已经是很遥远的事情，二月，终于过完了。这个月发生了不少事情，搞到我日子过的有点没有重点，做什么事情都有点不上心的感觉。不过，它就要完结了。</p>
+<p> </p>
+<p>刚好今天是4年一遇的2月29。四年后，我会怎么样呢？要想到时候开心点，现在就努力点吧。</p>
+<p> </p>
+<p>二月开始的时候我就为这个月定了个目标，调整好自己的睡眠时间，将晚睡的习惯改掉，现在总的来说还行，基本12点差不多就睡觉了，而之前是基本2点差不多的。不过早上还是起不来，经常闹钟响了半天才起来。三月的目标就是早上早起，晚上继续早点睡。还有将日语的五十音图背好。</p>
+<p> </p>
+<p>过年的时候开始看了本《linux c一站式编程》，感觉还行，挺基础的，不过我还是了解的多，深入的少，很多方面知道，但是呢仅仅停留在知道。这个很坑爹，导致经常很浮躁。</p>
+<p> </p>
+<p>在这个快餐年代，保留自己平静的心实在是不容易啊。今年应该多注意应该管好自己的情绪和嘴巴，平和点，少点浮躁。</p>
+<p> </p>
+<p>----------------------------------------------------------------</p>
+<p> </p>
+<p><strong>android</strong></p>
+<p> </p>
+<p>1.</p>
+<p> </p>
+<p>设置imagebutton为透明显示出覆盖的东西的时候这样设置android:background="@null"</p>
+<p>如果设置@color/transparent会显示出莫名其妙的背景图的缩影。</p>
+<p> </p>
+<p> </p>
+<p>2.</p>
+<p>修改hosts文件</p>
+<p>http://blog.csdn.net/laorer/article/details/5660512</p>
+<p> </p>
+<p><span style="font-size: xx-small;">具体步骤如下</span></p>
+<p><span style="font-size: xx-small;">1、获得root权限：adb root</span></p>
+<p><span style="font-size: xx-small;">2、设置/system为可读写：adb remount</span></p>
+<p><span style="font-size: xx-small;">3、将hosts文件复制到PC：adb pull /system/etc/hosts &lt;PC机上文件名&gt;</span></p>
+<p><span style="font-size: xx-small;">4、修改PC机上文件</span></p>
+<p><span style="font-size: xx-small;">5、将PC机上文件复制到手机：adb push &lt;PC机上文件名&gt; /system/etc/hosts</span></p>
+<p><span style="font-size: xx-small;">但在第五步时，有的人会报  out of memory的错误</span></p>
+<p><span style="font-size: xx-small;">这是因为直接用命令行启动，而没加一个参数造成的，所以用下面这个命令来启动就行了</span></p>
+<p><span style="font-size: xx-small;">$emulator –avd youravdname –partition-size 128</span></p>
+<p><span style="font-size: xx-small;"><br></span></p>
+<p><span style="font-size: xx-small;">3.</span></p>
+<p><span style="font-size: xx-small;">同步httpclient和webview的session。</span></p>
+<p><span style="font-size: xx-small;"><br></span></p>
+<p> </p>
+<p> </p>
+<pre name="code" class="java">CookieSyncManager.createInstance(this);
+		CookieManager cookieManager = CookieManager.getInstance();
+		Cookie sessionCookie = Session.getInstance().getCookie();
+		Log.e("cookie", sessionCookie.toString());
+		if (sessionCookie != null) {
+			String cookieString = sessionCookie.getName() + "="
+					+ sessionCookie.getValue() + "; domain="
+					+ sessionCookie.getDomain();
+//			cookieManager.removeSessionCookie();
+			cookieManager.setAcceptCookie(true);
+			cookieManager.setCookie(sessionCookie.getDomain(), cookieString);
+			CookieSyncManager.getInstance().sync();
+		}</pre>
+<p>
+ CookieManager.getInstance();If this is called before any WebView is created or outside of WebView context, the caller needs to call createInstance(Context) first.
+</p>
+<p> </p>
+<p>如果CookieSyncManager.createInstance(this);之前已经有webview实例，那么会出现有时候可以同步有时候不行的情况。要么不使用CookieSyncManager.进行同步 要么放在最开始。这个问题纠结了我好久，就是因为我的CookieSyncManager.createInstance(this)是放在已经有webview实例的情况下，导致了session有时候同步有时候失效，怎么搞都不行，也有看到说同步的时候停顿一秒钟，但也是有时候可以有时候失败，关键是文档看的快没看清楚要求。不过，最近发现在cookie超时过期的情况下还是会有session同步不了的情况。这个噩梦一般的同步啊。</p>
+<p> </p>
+<p> </p>
+<p><strong>c</strong></p>
+<p> </p>
+<p>1.</p>
+<p> </p>
+<p>const限定符和指针结合起来常见的情况有以下几种。</p>
+<p>const int *a;int const *a;</p>
+<p>这两种写法是一样的，a是一个指向const int型的指针，a所指向的内存单元不可改写，所以(*a)++是不允许的，但a可以改写，所以a++是允许的。</p>
+<p>int * const a;</p>
+<p>a是一个指向int型的const指针，*a是可以改写的，但a不允许改写。</p>
+<p>int const * const a;</p>
+<p>a是一个指向const int型的const指针，因此*a和a都不允许改写。</p>
+<p> </p>
+<p>2.</p>
+<p> </p>
+<pre name="code" class="c">double rect_real_part(struct complex_struct z){ 
+return z.a;
+}
+double rect_img_part(struct complex_struct z){ 
+return z.b;
+}
+double rect_magnitude(struct complex_struct z){ 
+return sqrt(z.a * z.a + z.b * z.b);
+}
+double rect_angle(struct complex_struct z){ 
+double PI = acos(-1.0);
+ if (z.a &gt; 0) return atan(z.b / z.a);
+ else return atan(z.b / z.a) + PI;
+}
+double pol_real_part(struct complex_struct z){
+ return z.a * cos(z.b);
+}
+double pol_img_part(struct complex_struct z){
+ return z.a * sin(z.b);
+}
+double pol_magnitude(struct complex_struct z){
+ return z.a;
+}
+double pol_angle(struct complex_struct z){ 
+return z.b;
+}
+double (*real_part_tbl[])(struct complex_struct) = { rect_real_part, pol_real_part };
+double (*img_part_tbl[])(struct complex_struct) = { rect_img_part, pol_img_part };
+double (*magnitude_tbl[])(struct complex_struct) = { rect_magnitude, pol_magnitude };
+double (*angle_tbl[])(struct complex_struct) = { rect_angle, pol_angle };
+#define real_part(z) real_part_tbl[z.t](z)
+#define img_part(z) img_part_tbl[z.t](z)
+#define magnitude(z) magnitude_tbl[z.t](z)
+#define angle(z) angle_tbl[z.t](z)
+</pre>
+<p> </p>
+<p> </p>
+<p>3.</p>
+<p> </p>
+<p>在函数式宏定义中，#运算符用于创建字符串，#运算符后面应该跟一个形参（中间可以有空格或Tab），例如：</p>
+<p>#define STR(s) # sSTR(hello world)</p>
+<p>用cpp命令预处理之后是"helloworld"</p>
+<p> </p>
+<p>在宏定义中可以用##运算符把前后两个预处理Token连接成一个预处理Token，和#运算符不</p>
+<p>同，##运算符不仅限于函数式宏定义，变量式宏定义也可以用。例如：</p>
+<p>#define CONCAT(a, b) a##bCONCAT(con, cat)</p>
+<p>预处理之后是concat。</p>
+<p> </p>
+<p>我们知道printf函数带有可变参数，函数式宏定义也可以带可变参数，同样是在参数列表中用...表示可变参数。例如：</p>
+<p>#define showlist(...) printf(#__VA_ARGS__)#define report(test, ...) ((test)?printf(#test):\ printf(__VA_ARGS__))showlist(The first, second, and third items.);report(x&gt;y, "x is %d but y is %d", x, y);</p>
+<p>预处理之后变成：</p>
+<p>printf("The first, second, and third items.");((x&gt;y)?printf("x&gt;y"): printf("x is %d but y is %d", x, y));</p>
+<p>在宏定义中，可变参数的部分用__VA_ARGS__表示，实参中对应...的几个参数可以看成一个参数替换到宏定义中__VA_ARGS__所在的地方。</p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p><strong>javascript</strong></p>
+<p>1.</p>
+<p><a href="http://www.cnblogs.com/rubylouvre/archive/2012/02/15/2351991.html">http://www.cnblogs.com/rubylouvre/archive/2012/02/15/2351991.html</a></p>
+<p> </p>
+<pre class="brush:js;gutter:false;toolbar:false;">function add(x) {________}; alert(add(2)(3)(4)); //填空，使结果为9</pre>
+<p> </p>
+<p> </p>
+<p>首先这个题目因为add是个function，要做成无线调用那就是用curry咯，而这里alert这个function是有值的，就是说这个function的tostring方法要做下手脚，不能用默认的。</p>
+<p> </p>
+<p>2.</p>
+<p>
+</p>
+<p>Stacking Calls with setInterval</p>
+<p> </p>
+<p>While setTimeout only runs the function once, setInterval - as the name suggests - will execute the function every X milliseconds, but its use is discouraged.</p>
+<p> </p>
+<p>When code that is being executed blocks the timeout call, setInterval will still issue more calls to the specified function. This can, especially with small intervals, result in function calls stacking up.</p>
+<p> </p>
+<p>function foo(){</p>
+<p>    // something that blocks for 1 second</p>
+<p>}</p>
+<p>setInterval(foo, 100);</p>
+<p>In the above code, foo will get called once and will then block for one second.</p>
+<p>
+</p>
+<p style="margin: 0px;">While foo blocks the code, setInterval will still schedule further calls to it. Now, when foo has finished, there will already be ten further calls to it waiting for execution.</p>
+<p style="margin: 0px;"> </p>
+<p style="margin: 0px;">Dealing with Possible Blocking Code</p>
+<p style="margin: 0px;"> </p>
+<p style="margin: 0px;">The easiest solution, as well as most controllable solution, is to use setTimeout within the function itself.</p>
+<p style="margin: 0px;"> </p>
+
+<p>3.</p>
+<p>
+</p>
+<p>The function that was passed as the first parameter will get called by the global object, which means that this inside the called function refers to that very object.</p>
+<p> </p>
+<p>function Foo() {</p>
+<p>    this.value = 42;</p>
+<p>    this.method = function() {</p>
+<p>        // this refers to the global object</p>
+<p>        console.log(this.value); // will log undefined</p>
+<p>    };</p>
+<p>    setTimeout(this.method, 500);</p>
+<p>}</p>
+<p>new Foo();</p>
+
+<p> </p>
+<p>4.</p>
+<p>
+</p>
+<p>Global code and Function code</p>
+<p> </p>
+<p>When a variable or a function is defined in a global or a function scope it is a property of either Activation object or Global object. Such properties have a set of attributes, one of these is DontDelete. Variable and function declarations in global and function code always create properties with DontDelete, therefore cannot be deleted.</p>
+<p> </p>
+<p>// global variable:</p>
+<p>var a = 1; // DontDelete is set</p>
+<p>delete a; // false</p>
+<p>a; // 1</p>
+<p> </p>
+<p>// normal function:</p>
+<p>function f() {} // DontDelete is set</p>
+<p>delete f; // false</p>
+<p>typeof f; // "function"</p>
+<p> </p>
+<p>// reassigning doesn't help:</p>
+<p>f = 1;</p>
+<p>delete f; // false</p>
+<p>f; // 1</p>
+<p> </p>
+<p>Explicit properties</p>
+<p> </p>
+<p>There are things which can be deleted normally: these are explicitly set properties.</p>
+<p> </p>
+<p>// explicitly set property:</p>
+<p>var obj = {x: 1};</p>
+<p>obj.y = 2;</p>
+<p>delete obj.x; // true</p>
+<p>delete obj.y; // true</p>
+<p>obj.x; // undefined</p>
+<p>obj.y; // undefined</p>
+<p> </p>
+<p>In the example above obj.x and obj.y can be deleted because they have no DontDelete atribute. That's why an example below works too.</p>
+<p> </p>
+<p>// this works fine, except for IE:</p>
+<p>var GLOBAL_OBJECT = this;</p>
+<p>GLOBAL_OBJECT.a = 1;</p>
+<p>a === GLOBAL_OBJECT.a; // true - just a global var</p>
+<p>delete GLOBAL_OBJECT.a; // true</p>
+<p>GLOBAL_OBJECT.a; // undefined</p>
+<p> </p>
+<p>Here we use a trick to delete a. this here refers to the Global object and we explicitly declare variable a as it's property which allows us to delete it.</p>
+<p> </p>
+<p>IE (at least 6-8) has some bugs, so code above doesn't work.</p>
+
+<p> </p>
+<p>5.</p>
+<p>
+</p>
+<pre name="code" class="js">The code below has no semicolons in it, so it is up to the parser to decide where to insert them.
+
+(function(window, undefined) {
+    function test(options) {
+        log('testing!')
+
+        (options.list || []).forEach(function(i) {
+
+        })
+
+        options.value.test(
+            'long string to pass here',
+            'and another long string to pass'
+        )
+
+        return
+        {
+            foo: function() {}
+        }
+    }
+    window.test = test
+
+})(window)
+
+(function(window) {
+    window.someLibrary = {}
+
+})(window)
+Below is the result of the parser's "guessing" game.
+
+(function(window, undefined) {
+    function test(options) {
+
+        // Not inserted, lines got merged
+        log('testing!')(options.list || []).forEach(function(i) {
+
+        }); // &lt;- inserted
+
+        options.value.test(
+            'long string to pass here',
+            'and another long string to pass'
+        ); // &lt;- inserted
+
+        return; // &lt;- inserted, breaks the return statement
+        { // treated as a block
+
+            // a label and a single expression statement
+            foo: function() {} 
+        }; // &lt;- inserted
+    }
+    window.test = test; // &lt;- inserted
+
+// The lines got merged again
+})(window)(function(window) {
+    window.someLibrary = {}; // &lt;- inserted
+
+})(window); //&lt;- inserted
+Note: The JavaScript parser does not "correctly" handle return statements which are followed by a new line, while this is not neccessarily the fault of the automatic semicolon insertion, it can still be an unwanted side-effect.
+The parser drastically changed the behavior of the code above. In certain cases, it does the wrong thing.
+
+Leading Parenthesis
+
+In case of a leading parenthesis, the parser will not insert a semicolon.
+
+log('testing!')
+(options.list || []).forEach(function(i) {})
+This code gets transformed into one line.
+
+log('testing!')(options.list || []).forEach(function(i) {})
+Chances are very high that log does not return a function; therefore, the above will yield a TypeError stating that undefined is not a function.
+</pre>
+ 
+<p>6.</p>
+<p>
+</p>
+<pre name="code" class="js">In order to protect code against a possible overwritten undefined variable, a common technique used is to add an additional parameter to an anonymous wrapper that gets no argument passed to it.
+
+var undefined = 123;
+(function(something, foo, undefined) {
+    // undefined in the local scope does 
+    // now again refer to the value
+
+})('Hello World', 42);
+Another way to achieve the same effect would be to use a declaration inside the wrapper.
+
+var undefined = 123;
+(function(something, foo) {
+    var undefined;
+    ...
+
+})('Hello World', 42);
+The only difference here is that this version results in 4 more bytes being used in case it is minified, and there is no other var statement inside the anonymous wrapper.
+</pre>
+
+<p> </p>
+<p>7.</p>
+<p>
+</p>
+<pre name="code" class="js">However, eval only executes in the local scope when it is being called directly and when the name of the called function is actually eval.
+
+var foo = 1;
+function test() {
+    var foo = 2;
+    var bar = eval;
+    bar('foo = 3');
+    return foo;
+}
+test(); // 2
+foo; // 3
+The use of eval should be avoided at all costs. 99.9% of its "uses" can be achieved without it.
+</pre>
+
+<p> </p>
+<p>8.</p>
+
+<p>
+</p>
+<pre name="code" class="java">The constructors of the built in types like Number and String behave differently when being used with the new keyword and without it.
+
+new Number(10) === 10;     // False, Object and Number
+Number(10) === 10;         // True, Number and Number
+new Number(10) + 0 === 10; // True, due to implicit conversion
+Using a built-in type like Number as a constructor will create a new Number object, but leaving out the new keyword will make the Number function behave like a converter.
+
+In addition, having literals or non-object values in there will result in even more type coercion.
+
+Casting to a String
+
+'' + 10 === '10'; // true
+By prepending an empty string, a value can easily be casted to a string.
+
+Casting to a Number
+
++'10' === 10; // true
+Using the unary plus operator, it is possible to cast to a number.
+
+Casting to a Boolean
+
+By using the not operator twice, a value can be converted a boolean.
+
+!!'foo';   // true
+!!'';      // false
+!!'0';     // true
+!!'1';     // true
+!!'-1'     // true
+!!{};      // true
+!!true;    // true</pre>
+ 
+<p> </p>
+<p>9.</p>
+<p>
+</p>
+<pre name="code" class="js">In order to be able to omit the new keyword, the constructor function has to explicitly return a value.
+
+function Bar() {
+    var value = 1;
+    return {
+        method: function() {
+            return value;
+        }
+    }
+}
+Bar.prototype = {
+    foo: function() {}
+};
+
+new Bar();
+Bar();
+Both calls to Bar return the exact same thing, a newly create object which has a property called method on it, which is a Closure.
+
+It is also to note that the call new Bar() does not affect the prototype of the returned object. While the prototype will be set on the newly created object, Bar never returns that new object.
+</pre>
+
+<p> </p>
+<p>10.</p>
+<p>
+</p>
+<pre name="code" class="js">However, there is one case which will drastically reduce the performance in modern JavaScript engines. That case is the use of arguments.callee.
+
+function foo() {
+    arguments.callee; // do something with this function object
+    arguments.callee.caller; // and the calling function object
+}
+
+function bigLoop() {
+    for(var i = 0; i &lt; 100000; i++) {
+        foo(); // Would normally be inlined...
+    }
+}
+In the above code, foo can no longer be a subject to inlining since it needs to know about both itself and its caller. This not only defeats possible performance gains that would arise from inlining, but it also breaks encapsulation because the function may now be dependent on a specific calling context.
+
+It is highly recommended to never make use of arguments.callee or any of its properties.
+</pre>
+ 
+<p>11.</p>
+<p>
+</p>
+<pre name="code" class="js">While most of these cases make sense, the first one is to be considered another mis-design of the language because it never has any practical use.
+
+Foo.method = function() {
+    function test() {
+        // this is set to the global object
+    }
+    test();
+}
+A common misconception is that this inside of test refers to Foo; while in fact, it does not.
+
+In order to gain access to Foo from within test, it is necessary to create a local variable inside of method which refers to Foo.
+
+Foo.method = function() {
+    var that = this;
+    function test() {
+        // Use that instead of this here
+    }
+    test();
+}
+that is just a normal variable name, but it is commonly used for the reference to an outer this. In combination with closures, it can also be used to pass this values around.
+</pre>
+
+<p> </p>
+<p>12.</p>
+<p>
+</p>
+<pre name="code" class="js">A common misconception is that number literals cannot be used as objects. That is because a flaw in JavaScript's parser tries to parse the dot notation on a number as a floating point literal.
+
+2.toString(); // raises SyntaxError
+There are a couple of workarounds which can be used in order make number literals act as objects too.
+
+2..toString(); // the second point is correctly recognized
+2 .toString(); // note the space left to the dot
+(2).toString(); // 2 is evaluated first</pre>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

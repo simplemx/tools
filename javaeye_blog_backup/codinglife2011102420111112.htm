@@ -1,0 +1,303 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>coding life2011-10-24~2011-11-12</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p>以下是最近的一些杂记录，主要是javascript为主。</p>
+<p> </p>
+<p>其实10月以来关注移动开发比较多，天天都会逛逛jquerymobile论坛，不过后来参与的项目彻底不用jquerymobile了，哎，折腾来折腾去一早就直接用app就好了。关于jquerymobile，phonegap这些的后面想好了再写下。</p>
+<p> </p>
+<p>时间太少，想法太多，说实在我对android这些还真不是很感冒，看着自己的前端后端了解的肤浅，还费时间去看android代码，就总想自己是不是太泛滥了。不过后来想下，一来公司用到，二来，反正就些api而已嘛，参与这个项目中间的过程给我的反思才是重点。呵呵，不乱说太多了。</p>
+<p> </p>
+<p><strong>Java:</strong></p>
+<p> </p>
+<p>1.Taperstry:</p>
+<p>Page里的字符串写法</p>
+<p>binding 表达式里         &lt;binding name="rel" expression="'external'"/&gt; 用单引号'标示字符串</p>
+<p>另外如果这里的字符串包含双引号和单引号，那就郁闷了，我折腾了了一下发现都是不生效的。</p>
+<p> </p>
+<p>2.servlet ajax 返回字符多了空格换行。</p>
+<p>这个是菜鸟问题，看到个同事在servlet里返回ajax的时候调用println然后说返回的字符不对郁闷了半天，这叫我情何以堪。以后千万要记得response.getwriter.print，别点多了写成response.getwriter.println。</p>
+<p>另外在js端也可以去掉多余的字符</p>
+<p>data = data.replace(/^\s*/, ""); //去除前置空格</p>
+<p>data = data.replace(/\s*$/, "" ); //去除后置空格</p>
+<p> </p>
+<p>另外还有一个菜鸟问题，设置字符集的时候一定要再getwriter之前，否则字符集是不生效的。</p>
+<p>getResponse().setContentType("text/plain; charset=UTF-8");</p>
+<p>getResponse().getWriter();</p>
+<p> </p>
+<p> </p>
+<p><strong>Android</strong>:</p>
+<p> </p>
+<p> </p>
+<p>1.Sensor</p>
+<p>android.hardware.SensorManager<span style="white-space: pre;">	</span>允许访问 Android 平台传感器的类。并非所有配备 Android 的设备都支持 SensorManager 中的所有传感器，虽然这种可能性让人非常兴奋。传感器类型 :方向、加速表、光线、磁场、临近性、温度等。</p>
+<p>android.hardware.SensorListener<span style="white-space: pre;">	</span>在传感器值实时更改时，希望接收更新的类要实现的接口。应用程序实现该接口来监视硬件中一个或多个可用传感器。例如，本文中的 代码 包含实现该接口的类，实现后可以监视设备的方向和内置的加速表。</p>
+<p> </p>
+<p>2.</p>
+<p> </p>
+<p>this.runOnUiThread(runnable);</p>
+<p>在Thread1中创建一个Thread2，使用Thread2将处理后的数据返回到界面中，但是要特别注意的是，android只接受在activity线程中处理UI，所以需要使用callback函数将Thread2设为activity的线程</p>
+<p> </p>
+<p>3.phonegap</p>
+<p>phonegap可以在js里面调用java代码从而调用手机的功能。</p>
+<p>之前我以为phonegap是使用在webview上的绑定java object的addJavascriptInterface方法来实现的。</p>
+<p>后来看了下代码，发现在1.0版本中就不是了（貌似老版本就是通过addJavascriptInterface来实现的）。在1.0版本中是通过js的prompt来进行捕捉js的事件然后调用plugin。具体参考GapClient.onJsPrompt方法以及js里面的exec方法。</p>
+<p>网上也有文章说到：http://www.blogjava.net/lincode/archive/2011/09/20/359014.html</p>
+<p> </p>
+<p><strong>Linux</strong></p>
+<div>1.mbr master boot record:</div>
+<div>硬盘主要开机扇区，硬盘的第一个扇区</div>
+<div><br></div>
+<div>2.grub:linux boot loader.目前主流开机管理程序.</div>
+<div><br></div>
+<div>3.使用者自订开机启动程序 (/etc/rc.d/rc.local).以下直接从鸟哥的私房菜中截取。</div>
+<div>在完成 run level 3 的服务启动后，如果我还有其它的动作想要完成时，举例来说， 我还想要寄一封 mail 给某个系统管理账号，通知他，系统刚刚重新开机完毕，那么， 是否应该要制作一个 shell script 放置在 /etc/rc.d/init.d/ 里面，然后再以连结方式连结到 /etc/rc.d/rc3.d/ 里面呢？呵呵！当然不需要！还记得上一小节提到的 /etc/rc.d/rc.local 吧？ 这个档案就可以执行您自己想要执行的系统指令了。像不像早期 DOS 年代的 autoexec.bat 与 config.sys 呢？ ^_^ 也就是说，我有任何想要在开机时就进行的工作时，直接将他写入 /etc/rc.d/rc.local ， 那么该工作就会在开机的时候自动被加载喔！而不必等我们登入系统去启动呢！ 是否很方便啊！一般来说，鸟哥就很喜欢把自己制作的 shell script 完整档名写入 /etc/rc.d/rc.local ，如此一来，开机就会将我的 shell script 执行过，真是好棒那</div>
+<div><br></div>
+<div><strong>CSS</strong></div>
+<div><br></div>
+<div>1.厂商前缀</div>
+<div>
+<div>CSS3的前缀是一个浏览器生产商经常使用的一种方式。例子：</div>
+<div>-webkit-transform:rotate(-3deg); /*为Chrome/Safari*/</div>
+<div>-moz-transform:rotate(-3deg); /*为Firefox*/</div>
+<div>-ms-transform:rotate(-3deg); /*为IE*/</div>
+<div>-o-transform:rotate(-3deg); /*为Opera*/ </div>
+<div>不同浏览器只识别对应它自己的属性。一般如果一个属性成为标准，并且被Firefox、Chrome等浏览器的最新版普遍兼容的时候 可以去掉前缀，保险点的是放在厂商的属性后面。</div>
+<div>但是使用CSS渐变等高级特性，需指定所有浏览器的前缀（CSS gradients require all browser prefixes）</div>
+</div>
+<div><br></div>
+<div>2.css animation</div>
+<div>1）开始的时候觉得jquerymobile那个动画过场很炫，后来了解了一下，其实简单的效果用css的一些动画就可以很简单的实现了。例如对一个div的css属性上增加以下这些animation属性就可以实现了</div>
+<div>
+<div>-webkit-transition-duration: 800ms;</div>
+<div>-webkit-transform: translate3d(0,600px,0);</div>
+</div>
+<div><br></div>
+<div>2）昨天看到一个代码片段，效果就是页面的字体延迟了一下再显示处理。</div>
+<div>具体css如下：</div>
+<div>
+<div>footer {</div>
+<div>    -webkit-animation: txt 1.5s 1 ease;</div>
+<div>    -moz-animation: txt 1.5s 1 ease;</div>
+<div>    animation: txt 1.5s 1 ease;</div>
+<div>}</div>
+<div>
+<div>@-webkit-keyframes txt {</div>
+<div>    0% {opacity: 0;}</div>
+<div>    30% {opacity: 0;}</div>
+<div>    100% {opacity: 100;}</div>
+<div>}</div>
+<div><br></div>
+<div>@-moz-keyframes txt {</div>
+<div>    0% {opacity: 0;}</div>
+<div>    30% {opacity: 0;}</div>
+<div>    100% {opacity: 100;}</div>
+<div>}</div>
+<div><br></div>
+<div>@keyframes txt {</div>
+<div>    0% {opacity: 0;}</div>
+<div>    30% {opacity: 0;}</div>
+<div>    100% {opacity: 100;}</div>
+<div>}</div>
+<div>这个暂时我还是有些地方需要了解更多的。以下是一些参考的链接</div>
+<div><a href="http://www.w3.org/TR/css3-animations/">http://www.w3.org/TR/css3-animations/</a></div>
+<div><a href="http://www.webkit.org/blog/138/css-animation/">http://www.webkit.org/blog/138/css-animation/</a></div>
+<div><br></div>
+<div><br></div>
+<div><strong>Javascript</strong></div>
+<div>这一个月主要都在读angus croll的博客，以下是一些笔记。</div>
+</div>
+</div>
+<div><br></div>
+<div>1.技巧1</div>
+<div>
+<pre name="code" class="js">var myObj = {a: 1, b: 2, c: 3}, myKeys = [], i=0;
+
+for (myKeys[i++] in myObj);
+
+myKeys; //['a','b','c'];</pre>
+ </div>
+<p>2.jsonp</p>
+<p> </p>
+<pre name="code" class="js">var logIt = function(data) {
+    //print last tweet text
+    window.console &amp;&amp; console.log(data[0].text);
+}
+var scriptTag = document.createElement('SCRIPT');
+scriptTag.src = "http://www.twitter.com/status/user_timeline/angustweets.json?count=5&amp;callback=logIt";
+document.getElementsByTagName('HEAD')[0].appendChild(scriptTag);</pre>
+<p> </p>
+<p> 这个具体参考</p>
+<p>http://javascriptweblog.wordpress.com/2010/11/29/json-and-jsonp/</p>
+<p> </p>
+<p>3.从angus croll博客中摘录的一个关于闭包的代码片段</p>
+<p> </p>
+<pre name="code" class="js">js closure
+//VariableEnvironment: {x: undefined, etc.};
+var x = "global";
+//VariableEnvironment: {x: "global", etc.};
+function outer() {
+    //VariableEnvironment: {y: undefined, outerLex: {x: "global", etc.}};
+    var y = "outer";
+    //VariableEnvironment: {y: "outer", outerLex: {x: "global", etc.}};
+    function inner() {
+        //VariableEnvironment: {x: undefined, outerLex: {y: "outer", outerLex: {x:"global", etc.}};
+        var x = "inner";
+        //VariableEnvironment: {x: "inner", outerLex: {y: "outer", outerLex: {x:"global", etc.}};
+    }
+}</pre>
+<p> </p>
+<p> 所以js的闭包能引用外面的变量其实就是通过这个variableEnvironment。够清晰了吧？</p>
+<p> </p>
+<p>4.说到前端性能不能不看yahoo上的这个。</p>
+<p> </p>
+<p>http://developer.yahoo.com/blogs/ydn/posts/2007/07/high_performanc_5/</p>
+<p>http://developer.yahoo.com/performance/rules.html</p>
+<p> </p>
+<p> </p>
+<p>5.~</p>
+<p>~号在javascript中的定义</p>
+<p> </p>
+<p>Performs the NOT operator on each bit. </p>
+<p>所以下面是一个有趣的例子：</p>
+<p> </p>
+<p>If b is not a member of array a, add it to the end of the array (ECMA 5)</p>
+<p>~a.indexOf(b)||a.push(b)</p>
+<p>因为如果b不在a中，那么indexof为-1.~-1为0，其他都不为0，而0在js中是返回为false，其他都是true，所以这里可以巧妙的实现上述的需要。</p>
+<p> </p>
+<p> </p>
+<p>6.js变量声明</p>
+<p> </p>
+<p>多个变量声明，多个变量声明应该分多行，如：</p>
+<p> </p>
+<pre name="code" class="js"> var namespace = name.split( "." )[ 0 ],
+		             fullName;
+</pre>
+<p> </p>
+<p> </p>
+<p>7.caller callee</p>
+<p> </p>
+<p>caller</p>
+<p><span style="white-space: pre;">	</span>对于函数来说，caller 属性只有在函数执行时才有定义。如果函数是由顶层调用的，那么 caller 包含的就是 null 。</p>
+<p>callee</p>
+<p>  返回正被执行的 Function 对象，也就是所指定的 Function 对象的正文。</p>
+<p>例子，判断是否提供了所有参数</p>
+<p> </p>
+<pre name="code" class="js">var func = function(a,b,c) {//利用判断是否提供了所有参数
+    for (var i=0; arguments[i] !== undefined; i++);
+    var allArguments = (i &gt;= arguments.callee.length);//arguments.callee.length获取定义参数的长度
+}</pre>
+<p> 参考:</p>
+<p> </p>
+<p>  http://hi.baidu.com/mengjin/blog/item/44c754432f458c119213c6d3.html</p>
+<p> </p>
+<p> </p>
+<p>8.void</p>
+<p> </p>
+<p>The void operator is often used merely to obtain the undefined primitive value, usually using "void(0)" (which is equivalent to "void 0"). In these cases, the global variable undefined can be used instead (assuming it has not been assigned to a non-default value).</p>
+<p>例子</p>
+<p>for (var i=arr.length, r=0; i-- || void (r = r*x); r += arr[i]);</p>
+<p>这里利用i-- 来作判断，||后面的永远为false，但是却是执行了一个操作，等价于</p>
+<div>for (var i=arr.length, r=0; i-- ; r += arr[i]){</div>
+<div>
+<span style="white-space: pre;">	</span>r = r*x;</div>
+<div>}</div>
+<div><br></div>
+<div>9.!!</div>
+<div>
+<div>var a = "";</div>
+<div>!!a; //false</div>
+</div>
+<div><br></div>
+<div>10.jquery</div>
+<div>
+<div>找出所有属于 div 元素的子元素的 p 元素，然后设置其边框属性：</div>
+<div>$("div &gt; p").css("border", "1px solid gray");</div>
+</div>
+<div><br></div>
+<div>11.</div>
+<div>
+<div>cross-origin policy: a resource (an HTML page) can only access other resources from the same origin</div>
+<div>(the same URL scheme, the same hostname, and the same port).</div>
+</div>
+<div><br></div>
+<div>12.this</div>
+<div>参考http://javascriptweblog.wordpress.com/2010/08/30/understanding-javascripts-this</div>
+<div>
+<pre name="code" class="js">当为属性调用方法的时候，this为对象
+var foo = {
+    bar:function() {
+        //(Comments apply to example invocation only)
+        //MemberExpression = foo.bar
+        //thisValue = foo
+        //ThisBinding = foo
+        return this;
+    }
+};
+foo.bar(); //foo
+当为变量调用的时候，this为global obj
+var bar = function() {
+    //(Comments apply to example invocation only)
+    //MemberExpression = bar
+    //thisValue = undefined
+    //ThisBinding = global object (e.g. window)
+    return this
+};
+bar(); //window
+new 之后的构造器里this为该对象
+</pre>
+<pre name="code" class="js">foo.bar(); // foo
+(foo.bar)(); // foo
+(foo.bar = foo.bar)(); // global 这里返回的是一个方法
+(foo.bar || foo.baz)(); // global
+(function () {})(); // global</pre>
+<pre name="code" class="js">var sorter = {
+    sort: function() {
+        alert('sorting');
+    },
+    requestSorting: function() {
+        this.sort();
+    }
+}
+$('sortButton').onclick = sorter.requestSorting;//调用onclick的时候会调用btn的sort方法 错误的
+$('sortButton').onclick = sorter.requestSorting.bind(sorter);//绑定为sorter 才正常</pre>
+</div>
+<div> 上面的这个例子应用闭包修正如下：</div>
+<div>
+<pre name="code" class="js">var sorter = (function () {
+    var sort = function() {
+        alert('sorting');
+    };
+    return function(ev) {
+        sort(ev.target);
+    };
+}());
+$('sortButton').onclick = sorter;</pre>
+ </div>
+<p> </p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p> </p>
+<p><strong>HTTP</strong></p>
+<p> </p>
+<p>1.http accept headers</p>
+<p>http://www.gethifi.com/blog/browser-rest-http-accept-headers</p>
+<p>accept的例子：</p>
+<p style="text-align: left;"> </p>
+<pre>Accept:text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8</pre>
+<p> </p>
+<p>这里的q就是权重，1是最大，如果不写就是1. 所以这里代表了浏览器想要接受的内容类型的优先级是html或者xhtml，优先级是1.然后如果不行的话就给xml，优先级是0.9，再不行，那就什么类型都发过来就可以了。</p>
+<p>当然，不同浏览器对这个accept的处理是有些不同的。呵呵，不过大体上是类似上面差不多，可以参考上面的链接看看。</p>
+<p> </p>
+<p> </p>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

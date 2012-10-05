@@ -1,0 +1,22 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>一些感触</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p>      上周读到张逸先生的这篇博客<a href="http://www.cnblogs.com/wayfarer/archive/2011/02/18/1957530.html">http://www.cnblogs.com/wayfarer/archive/2011/02/18/1957530.html</a>。深有感触，因为项目中刚好有个这样的代码想重构下它，当初就是因为估计它接口参数肯定会变化的，所以那天凌晨将它改成一个map，现在当然觉得map还是不靠谱，想改为一个参数对象，但是和张逸先生的例子有些不一样，就是项目中的那个map还会传递到另外一个模块中，如果改为一个参数对象，那么会造成另外一个模块和这个模块的耦合，想了几天之后发觉，其实根本就不应该传递那个map过去，根本就是设计问题。</p>
+<p>       刚好前段时间读完clean code，回想起过去一年里在telbug中的代码，真是想想都觉得恶心，而我却创造了如此多的丑陋代码，哎，面壁去了。但回头一想，写代码的时候何尝不想写好它呢，只是就那么点时间，还加班加点，去年通了多少个宵，才休了多少个假日？</p>
+<p>      今天看到这篇文章<a href="http://cantellow.iteye.com/blog/909178">http://cantellow.iteye.com/blog/909178</a>，感触于下面这段文字：</p>
+<p> </p>
+<p><span style="color: #ff0000;">思想要统一，</span><span><span style="color: #ff0000;">XX</span></span><span><span style="color: #ff0000;">出品必属精品</span>，只要是自己负责的项目，自己写的代码，就必须是精品，这不是自负，是一种信念，我们必须自己认识这一点。从现在开始，就把这种思想根深蒂固的植入脑海中，可能这种思想是一个人的习惯，就像优秀是一种习惯一样。我曾经听说某位软件公司的主管招聘时说过：“如果一个开发人员为了给一个变量取一个最好的名称而彻夜难眠，那么这个人我要定了”。</span></p>
+<p> </p>
+<p><span>     就像clean code里有段文字描述到，无论是需求变化或者其他外在因素，最后都是因为我们不专业，所以才会产生这些垃圾代码，作为一个coder，他的职责就是写出好的代码，经理捍卫的是进度，而我们要做的是捍卫好代码。</span></p>
+<p><span>     别人当我们是码农，我们要将自己当工程师。</span></p>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

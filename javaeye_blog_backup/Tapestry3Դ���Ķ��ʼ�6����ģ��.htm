@@ -1,0 +1,47 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>Tapestry3源码阅读笔记6:加载模板</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p>之前写的都是和tapestry加载page相关的流程，最近粗略的扫了一下加载模板以及子component的流程。</p>
+<p> </p>
+<p> </p>
+<p>首先tapestry在加载的流程就是为这个component（包括page）建立这个component对应的一棵树，树上有的节点是纯文本，有的是这个component展示的子component，而子component也会递归的对应一棵类似的树，整一个component加载的过程就是建立好整一个完整的树，最后在输出到response的时候将树上的节点描绘出来。</p>
+<p> </p>
+<p>所有组件加载模板的入口方法是在BaseComponent方法的finishLoad方法里，无论是page还是component，在初始化加载完对象后都会触发finishload方法。</p>
+<p> </p>
+<p>finishload方法里就一个方法，readTemplate。下面来看readTemplate：</p>
+<p> </p>
+<pre class="java" name="code">ITemplateSource source = loader.getTemplateSource();
+ComponentTemplate componentTemplate = source.getTemplate(cycle, this);
+
+// Most of the work is done inside the loader class. 
+// We instantiate it just to invoke process() on it.
+
+new BaseComponentTemplateLoader(cycle, loader, this, componentTemplate, pageSource).process();</pre>
+<p> </p>
+<p> </p>
+<p> </p>
+<p>以上代码就是获取一个ITemplateSource然后生成这个模板对应的 componentTemplate。然后调用BaseComponentTemplateLoader这个对象来对componentTemplate对象进行处理。</p>
+<p> </p>
+<p>ComponentTemplate对象里保存着这个component对应模板的内容，以及解释成的token数组。通过ITemplateSource的实现类去获取模板类容以及token数组。token数组是一系列的token，主要就是三种，一种是texttoken，代表这个token在输出的时候是直接讲当前位置的模板内容输出到response，一种是opentoken，一种是closetoken，这是表明在这里有tag开始，有tag关闭，同时opentag还会记录这个tag是component否以及相关的其他信息。</p>
+<p> </p>
+<p>tapestry会通过TemplateParser去解释成上述的token数组，流程如下：</p>
+<p><img width="722" alt="" height="1183" src="http://dl.iteye.com/upload/picture/pic/114920/38526990-cb83-34be-82ce-e5b95b0eecef.jpg"></p>
+<p> </p>
+<p>有了componenttemplate这个对象，BaseComponentTemplateLoader这个对象就可以将componentTemplate内的token数组进行更一步的解释。</p>
+<p> </p>
+<p>简单点说，如果遇到texttoken，那么根据情况会放到component的outer数组，如果是tag内的内容放到component的body数组内。好让组件在描绘的时候将这些静态的html内容进行输出。如果碰到component，那么递归的进行上述的解释。</p>
+<p> </p>
+<p>最后输出的时候会根据component的情况，将outter、body或者renderComponet内控制的内容输出到response。</p>
+<p> </p>
+<p> </p>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>

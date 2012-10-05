@@ -1,0 +1,117 @@
+﻿<!doctype html>
+<html dir="ltr" lang="zh-CN">
+<head>
+<title>Tapestry3源码阅读笔记5:AbstractEngine/IEngineService</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<style type="text/css">
+body {font:normal 12px/24px Arial, Helvetica, sans-serif; background:#D9F0DB;}
+textarea,pre {font-family:Courier; font-size:12px;}
+</style>
+</head>
+<body>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p><p>之前可以看出tapestry的servlet是调用engine的service方法来进行渲染页面的。这里来看engine类。</p>
+<p> </p>
+<p> </p>
+<div style="font-size: medium;">AbstractEngine类是继承engine接口的基本类，子类BaseEngine，一般业务使用的engine都是直接使用BaseEngine或者BaseEngine的子类。</div>
+<div style="font-size: medium;"><br></div>
+<div style="font-size: medium;">ApplicationServlet是调用AbstractEngine的service方法，这里来看service方法。</div>
+<div style="font-size: medium;"><br></div>
+<div style="font-size: medium;">
+<pre class="java" name="code">setupForRequest(context);
+
+monitor = getMonitor(context);
+
+output = new ResponseOutputStream(context.getResponse());</pre>
+</div>
+<div style="font-size: medium;"> </div>
+<div style="font-size: medium;">首先先为这次请求初始化一些基本信息setupForRequest。方法里会设置上这个engine的_pool/pageSource、servicemap等等基本变量。Page相关的的PageSource、Pool就是在这里初始化的。</div>
+<div style="font-size: medium;"><br></div>
+<div style="font-size: medium;">
+<pre class="java" name="code">serviceName = extractServiceName(context);</pre>
+</div>
+<div style="font-size: medium;"> </div>
+<div style="font-size: medium;">获取当前的serviceName</div>
+<div style="font-size: medium;"><br></div>
+<div style="font-size: medium;">
+<pre class="java" name="code">if (Tapestry.isBlank(serviceName))
+    serviceName = Tapestry.HOME_SERVICE;</pre>
+</div>
+<div style="font-size: medium;"> </div>
+<div style="font-size: medium;">如果找不到servicename，那么默认的servicename为homeservice。</div>
+<div style="font-size: medium;"><br></div>
+<div style="font-size: medium;">
+<pre class="java" name="code">// Must have a service to create the request cycle.
+// Must have a request cycle to report an exception.
+
+service = getService(serviceName);
+
+//获取到EngineService。
+
+cycle = createRequestCycle(context, service, monitor);
+
+//为这次请求建立requestcycle
+
+monitor.serviceBegin(serviceName, context.getRequestURI());
+
+// Invoke the service, which returns true if it may have changed
+// the state of the engine (most do return true).
+
+service.service(this, cycle, output);</pre>
+</div>
+<div style="font-size: medium;"> </div>
+<div style="font-size: medium;">这里根据servicename获取到IEngineService。然后调用它的service方法进行渲染页面。</div>
+<div style="font-size: medium;"><br></div>
+<div style="font-size: medium;"><br></div>
+<div style="font-size: medium;">那么EngineService是怎么一回事呢？</div>
+<div style="font-size: medium;"><br></div>
+<div style="font-size: medium;">
+<p>上述的serviceName为app?service=page/List&amp;listener=initPage这样的字符串后service=page里的page。然后根据page去servicemap里查找对应的servic。servicemap是在setupForRequest方法里进行初始化的，它会根据全局的配置信息，主要是DefaultSpecificationSource类，关联一系列的NameSpace、IComponentSpecification、ILibrarySpecification这些类来查找当前应用所有的配置信息，从配置信息里查找service的定义。</p>
+<p> </p>
+<p>其实默认的service就定义在Framework.library里面：</p>
+<p> </p>
+<p> </p>
+<pre class="xml" name="code">&lt;service name="home" class="org.apache.tapestry.engine.HomeService"/&gt;
+&lt;service name="action" class="org.apache.tapestry.engine.ActionService"/&gt;
+&lt;service name="direct" class="org.apache.tapestry.engine.DirectService"/&gt;
+&lt;service name="page" class="org.apache.tapestry.engine.PageService"/&gt;
+&lt;service name="reset" class="org.apache.tapestry.engine.ResetService"/&gt;
+&lt;service name="restart" class="org.apache.tapestry.engine.RestartService"/&gt;
+&lt;service name="asset" class="org.apache.tapestry.asset.AssetService"/&gt;
+&lt;service name="external" class="org.apache.tapestry.engine.ExternalService"/&gt;
+
+&lt;!-- Used to support the JSP tags. --&gt;
+
+&lt;service name="tagsupport" class="org.apache.tapestry.engine.TagSupportService"/&gt;</pre>
+ 
+<p> </p>
+<p>engine从serviceMap中根据url的servicename查找出对应的engineservice，然后调用IEngineService里的service方法。</p>
+<p> </p>
+<p>IEngineService缓存在所有的engine下，并且被所有engine类共享。engine在解释玩url的时候获取到对该次请求的servicename，然后根据servicename从serviceMap中获取到对应的service。然后调用他们的service方法来对该次请求进行渲染。</p>
+<p> </p>
+<p>大体上的IEnginService里的service方法是如下：</p>
+<p> </p>
+<p> </p>
+<pre class="java" name="code">IPage home = cycle.getPage(IEngine.HOME_PAGE);
+
+cycle.activate(home);
+
+engine.renderResponse(cycle, output);</pre>
+<p> </p>
+<p>page是通过requestcycle来获取的，requestcycle正如其名，就是一次请求的一个流程，它保存着上下文requestcontext、engine等的引用，getpage方法就是将pagesource从engine中找出来，然后获取对应的ipage：</p>
+<p> </p>
+<p> </p>
+<pre class="java" name="code">           IPageSource pageSource = _engine.getPageSource();
+
+            result = pageSource.getPage(this, name, _monitor);
+
+            result.setRequestCycle(this);</pre>
+<p> </p>
+<p>继续看会EngineService的service方法。</p>
+<p> </p>
+<p>这里就是执行渲染页面的实际代码，首先获取到所要渲染的page。这个就从requestcycle中获取，然后activate这个page，其实就是执行校验调用page的validate方法。最后调用engine的渲染方法，最后会关联requestcycle、page去执行实际的渲染代码，迭代式的描述界面上的组件。</p>
+<p> </p>
+<p>一个tapestry由请求，到engine，到找到对应的engineservice，初始化requestcontext、requestcycle，以及pagesource等，然后调用pageloader去创建ipage，然后进行描绘，然后将ipage缓存在Pool里面。大体上的流程就是这样。</p>
+</div>
+<p><a href='_index.htm'>&lt;&lt;目录</a></p>
+</body>
+</html>
