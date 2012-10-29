@@ -1,0 +1,17 @@
+#! /usr/bin/env python
+#coding=gbk
+
+import os
+
+path =  "D:\\git\\tools\\javaeye_blog_backup"
+output_path = "D:\\output"
+
+def format(files):
+	[print f for f in files]
+
+def formatFiles():
+	for (p,d,files) in os.walk(path):
+		format(files)
+
+if __name__ == "__main__":
+	formatFiles()

@@ -7,7 +7,7 @@ import urllib
 
 class MyURLopener(urllib.FancyURLopener):
 	#Î±×°³ÉFirefox
-	version = "Mozilla/5.0 (Windows NT 5.1) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.30 Safari/534.30"
+	version = "Mozilla/5.0 (Windows; U; Windows NT 5.1; zh-CN; rv:1.9.0.2)"
 
 urllib._urlopener = MyURLopener()
 
