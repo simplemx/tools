@@ -82,10 +82,29 @@ class XSon():
 			print self.content
 			raise 
 
+	class TokenIter(object):
+		def __init__(self, ts):
+			self.tokens = ts
+			self.index = -1
+
+		def next(self):
+			self.index += 1
+			if self.index >= len(self.tokens):
+				raise StopIteration
+			else:
+				return self.tokens[self.index]
+		
+		def __iter__(self):
+			return self
+		
+		def remove(self, b, e):
+			self.tokens.__delslice(b, 2)
+
 	def generateObj(self, toks):
 		obj = {}
 		key = None
-		for i, token in enumerate(toks):
+		token_iter = TokenIter(toks)
+		for i, token in enumerate(token_iter):
 			if isinstance(token, TextToken):
 				if not key:
 					key = token
@@ -99,27 +118,33 @@ class XSon():
 					pass	
 				elif token.type == symbol_open_bracket:
 					if key:
-						obj[self.generateKey(key)] = generateArray(toks[i:])
+						obj[self.generateKey(key)], l = generateArray(toks[i:])
+						token_iter.remove(i, i+l)
 					else:
-						key = generateArray(toks[i:])
+						key, l = generateArray(toks[i:])
+						token_iter.remove(i, i+l)
 				elif token.type == symbol_double_quote or token.type == symbol_single_quote:
 					pass
 		
 	def generateArray(self, toks):
 		arr = []
 		elem_begin = 0
-		for i, token in enumerate(toks):
+		tok_iter = TokenIter(toks)
+		for i, token in enumerate(tok_iter):
 			if isinstance(token, SymbolToken):
 				if token.type == symbol_close_bracket:
-					return arr
+					return arr, i
 				elif token.type == symbol_open_bracket:
-					arr.append(self.generateArray(toks[i:]))
+					arrElem, l = self.generateArray(toks[i:])
+					arr.append(arrElem)
+					tok_iter.remove(i, i+l)
 				elif token.type == symbol_comma:
 					obj = self.generateElem(toks[elem_begin:i])
 					if obj:
 						arr.append(obj)
+					tok_iter.remove(elem_begin, i)
 					elem_begin = i + 1
-		return arr
+		return arr, i
 
 	def generateElem(self, toks):
 		l = len(toks)
