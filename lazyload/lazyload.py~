@@ -160,5 +160,4 @@ def conver_file(spath, tpath):
 
 if __name__ == "__main__":
 	conver_file(len(sys.argv) > 1 and sys.argv[1] or source_file, len(sys.argv) > 2 and sys.argv[2] or target_file)
-t
 
