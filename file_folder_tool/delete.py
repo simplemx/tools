@@ -5,8 +5,8 @@ import sys
 import string
 import re
 
-targetPath = "D:\\target"
-filterList = []
+targetPath = "D:\\project_wap\\echannelics"
+filterList = [".svn"]
 
 def matchFile(file):
     for each in filterList:
@@ -39,5 +39,5 @@ if __name__ == "__main__":
             filterList = list[2:]
         else :
             filterList = list
-        filter()
+    filter()
 
