@@ -7,7 +7,7 @@ import xml.dom.minidom
 
 def deploy():
 	if not os.path.isdir(config.TongWebPath):
-		print "please set TongWebPath in config.py"	
+		print "请确认config.py文件里的TongWebPath设置或者是否东方通服务器的文件路径准确"	
 		return
 	
 	print "begin deploying"
@@ -26,6 +26,35 @@ def deploy():
 		os.system(cmd)	
 		"begin to change port"
 		port_config(node)
+		mv_license(node)
+		jvm_config(node)
+		if config.is_start:
+			start_server(node)
+	"运行完毕删除bak文件夹"
+	cmd = "rm -r " + bak_dir
+	print cmd
+	os.system(cmd)
+
+def start_server(config_node):
+	"启动应用"
+	cmd = config_node["path"] + "/bin/startserver.sh &"
+	print cmd
+	os.system(cmd)
+
+def jvm_config(config_node):
+	"将copyfiles下的startserver.sh复制到东方通服务器下"
+	cmd = "mv " + config_node["path"] + "/bin/startserver.sh " + config_node["path"] + "/bin/startserver.shbak"
+	print cmd
+	os.system(cmd)
+	cmd = "cp ./copyfiles/startserver.sh " + config_node["path"] + "/bin/startserver.sh"
+	print cmd
+	os.system(cmd)
+
+def mv_license(config_node):
+	"将copyfiles下的license文件复制到东方通服务器下"
+	cmd = "cp ./copyfiles/license.dat " + config_node["path"]
+	print cmd
+	os.system(cmd)
 
 def port_config(config_node) :
 	"修改端口配置，也就是修改应用下的twns.xml"

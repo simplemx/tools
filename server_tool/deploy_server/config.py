@@ -6,11 +6,11 @@ TongWebPath="../TongWeb/TongWeb5.0"
 "目标应用路径"
 targetPath = [
 	{
-"path":"./path1",
-"http_port":"8080",
-"admin_port":"9060",
-"iiop_port":"5100",
-"jmx_port":"3100"
+"path":"./TongWeb5.0_group",
+"http_port":"18093",
+"admin_port":"18094",
+"iiop_port":"18095",
+"jmx_port":"18096"
 	},{
 "path":"./path2",
 "http_port":"8080",
@@ -19,5 +19,7 @@ targetPath = [
 "jmx_port":"3100"
         }
 ]
+"是否启动东方通服务器"
+is_start = False
 
 
